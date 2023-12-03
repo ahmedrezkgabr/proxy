@@ -29,7 +29,7 @@ std::string FileHandling::getData(const std::string fileName)
 void FileHandling::setData(const std::string data, const std::string fileName)
 {
     /* open the file as output stream */
-    std::ofstream outputFile(fileName);
+    std::ofstream outputFile(fileName, std::ios::app);
 
     /* is it opend well? */
     if (!outputFile.is_open())
@@ -38,7 +38,7 @@ void FileHandling::setData(const std::string data, const std::string fileName)
     }
 
     /* write the data */
-    outputFile << data;
+    outputFile << data << "\n";
 
     /* close the file */
     outputFile.close();
