@@ -12,7 +12,7 @@
 #include <cstring>
 #include <ctime>
 #include "mqtt/async_client.h"
-// #include "FileHandling.hpp"
+#include "FileHandling.hpp"
 #include "MyCallBack.hpp"
 
 const std::string DFLT_ADDRESS{"mqtt://localhost:1883"};
@@ -27,58 +27,6 @@ const std::string OUTPUT_FILE_PATH{"./actions.csv"};
 
 const auto PERIOD = std::chrono::seconds(5);
 const int MAX_BUFFERED_MSGS = 120; // 120 * 5sec => 10min off-line buffering
-
-class FileHandling
-{
-public:
-    std::string getData(const std::string fileName);
-    void setData(const std::string data, const std::string fileName);
-    FileHandling(/* args */);
-    ~FileHandling();
-};
-
-
-FileHandling::FileHandling() {}
-FileHandling::~FileHandling() {}
-
-std::string FileHandling::getData(const std::string fileName)
-{
-    /* open the file as input stream */
-    std::ifstream inputFile(fileName);
-
-    /* is it opend well? */
-    if (!inputFile.is_open())
-    {
-        std::cerr << "Error opening the file." << std::endl;
-        return NULL;
-    }
-
-    /* read the data */
-    std::string data;
-    std::getline(inputFile, data);
-
-    /* close the file */
-    inputFile.close();
-    return data;
-}
-
-void FileHandling::setData(const std::string data, const std::string fileName)
-{
-    /* open the file as output stream */
-    std::ofstream outputFile(fileName);
-
-    /* is it opend well? */
-    if (!outputFile.is_open())
-    {
-        std::cerr << "Error opening the file." << std::endl;
-    }
-
-    /* write the data */
-    outputFile << data;
-
-    /* close the file */
-    outputFile.close();
-}
 
 int main(int argc, char *argv[])
 {
