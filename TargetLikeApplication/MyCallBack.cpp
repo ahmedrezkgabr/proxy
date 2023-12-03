@@ -8,7 +8,10 @@ void MyCallBack::connection_lost(const std::string &cause)
 void MyCallBack::message_arrived(mqtt::const_message_ptr msg)
 {
     recived_msg_flag = 1;
-    std::cout << "Message arrived on topic '" << msg->get_topic() << "': " << msg->to_string() << std::endl;
+    this->counter_rec++;
+    std::cout << "Message arrived on topic '" << msg->get_topic() << "': " << msg->to_string()
+              << this->counter_rec << ",,, "
+              << this->counter_sen << std::endl;
     this->msg = msg->to_string();
 }
 

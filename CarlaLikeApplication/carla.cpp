@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
 
             /* publish the new data each to its topic */
             topForBub.publish(sensors);
+            callback.counter_sent++;
 
             if (callback.recived_msg_flag)
             {

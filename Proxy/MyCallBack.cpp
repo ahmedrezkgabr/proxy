@@ -7,12 +7,20 @@ void MyCallBack::connection_lost(const std::string &cause)
 
 void MyCallBack::message_arrived(mqtt::const_message_ptr msg)
 {
-    this->counter_received++;
-    recived_msg_flag = 1;
-    std::cout << "Message arrived on topic '" << msg->get_topic() << "': " << msg->to_string()
-              << this->counter_received << ",,, "
-              << this->counter_sent << std::endl;
-    this->msg = msg->to_string();
+    std::string topic = msg->get_topic();
+
+    if (topic == "carla/sensors")
+    {
+        recived_msg_flag |= 1;
+        this->msg_sensors = msg->to_string();
+    }
+    else if (topic == "rpi/01/actions")
+    {
+        recived_msg_flag |= 2;
+        this->msg_actions = msg->to_string();
+    }
+    std::cout << "Message arrived on topic '"
+              << msg->get_topic() << "': " << msg->to_string() << std::endl;
 }
 
 void MyCallBack::delivery_complete(mqtt::delivery_token_ptr token)
