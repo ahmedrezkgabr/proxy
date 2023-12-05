@@ -2,12 +2,9 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <unistd.h>
-#include <fstream>
 #include <string>
-#include <thread>
 #include <chrono>
 #include <iostream>
-#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
@@ -15,27 +12,27 @@
 #include "FileHandling.hpp"
 #include "MyCallBack.hpp"
 
-const std::string RPI_ID{"01"};
-const std::string DFLT_ADDRESS{"mqtt://localhost:1883"};
-const std::string CLIENT_ID{"rpi_01"};
-const std::string TOPIC_TO_PUB{"rpi/" + RPI_ID + "/actions"};
-const std::string TOPIC_TO_SUB{"rpi/" + RPI_ID + "/sensors"};
-
-const int QOS{1};
-
-const std::string INPUT_FILE_PATH{"./actions.csv"};
-const std::string OUTPUT_FILE_PATH{"./sensors.csv"};
-
-const auto PERIOD = std::chrono::seconds(5);
-const int MAX_BUFFERED_MSGS = 120; // 120 * 5sec => 10min off-line buffering
-
-
 
 int main(int argc, char *argv[])
 {
+    /*const intialization*/
+    const std::string RPI_ID{argv[1]};
+    std::cout<<RPI_ID<<std::endl;
+    const std::string DFLT_ADDRESS{"mqtt://localhost:1883"};
+    const std::string CLIENT_ID{"rpi_"+RPI_ID};
+    const std::string TOPIC_TO_PUB{"rpi/" + RPI_ID + "/actions"};
+    const std::string TOPIC_TO_SUB{"rpi/" + RPI_ID + "/sensors"};
+    const int QOS{1};
+    const std::string INPUT_FILE_PATH{argv[2]};//actions file
+    std::cout<<INPUT_FILE_PATH<<std::endl;
+    const std::string OUTPUT_FILE_PATH{argv[3]};//sensors file
+     std::cout<<OUTPUT_FILE_PATH<<std::endl;
+    const auto PERIOD = std::chrono::seconds(5);
+    const int MAX_BUFFERED_MSGS = 120; // 120 * 5sec => 10min off-line buffering
+    
     /* init */
     /* get the passed argument to be the address, if not use the defualt */
-    std::string address = (argc > 1) ? std::string(argv[1]) : DFLT_ADDRESS;
+    std::string address = DFLT_ADDRESS;
 
     /* create a client object */
     mqtt::async_client client(address, CLIENT_ID, MAX_BUFFERED_MSGS, NULL);
