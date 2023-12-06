@@ -1,13 +1,14 @@
 #ifndef CALL
 #define CALL
 #include "mqtt/async_client.h"
+#include <vector>
 
 class MyCallBack : public virtual mqtt::callback
 {
 public:
     int recived_msg_flag = 0;
     std::string msg_sensors;
-    std::string msg_actions;
+    std::vector<std::string> msg_actions;
 
     /* overriding the functions on every action may happen */
     void connection_lost(const std::string &cause) override;         /* call back function called when lossing the connection with the broker */
