@@ -16,8 +16,14 @@ void MyCallBack::message_arrived(mqtt::const_message_ptr msg)
     }
     else if (topic == "rpi/01/actions")
     {
+        
         recived_msg_flag |= 2;
-        this->msg_actions = msg->to_string();
+        this->msg_actions[0]=msg->to_string();
+    }
+    else if(topic == "rpi/02/actions")
+    {
+        recived_msg_flag |= 4;
+        this->msg_actions[1]=msg->to_string();
     }
     std::cout << "Message arrived on topic '"
               << msg->get_topic() << "': " << msg->to_string() << std::endl;
