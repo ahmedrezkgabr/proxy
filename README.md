@@ -1,30 +1,94 @@
-# proxy
-this is the demo of a subsystem **(Proxy)**
-this proxy works as an intermediate layer between the real world processing systems and the simulation tool
+# Proxy
 
-the simulation tool is Carla simulator
+## Abstract
 
-this repo consists of 3 directories 
-## 1. Proxy
-    this code is made to test the other test applications (perform the role of broxy **route the messages between carla and the real world**)
-## 2. CarlaLikeApplication
-    this application make the role of carla in the point of view of proxy **send the sensors to proxy and receives the actions from proxy**
-## 3. TargetLikeApplication
-    this code make the role of real target application in the point of view of proxy **receives routed sensors data, process it, send the corresponding actions to the proxy**
+Welcome to the Proxy Subsystem of the Truck Platooning Graduation Project! This subsystem serves as a crucial intermediate layer, facilitating seamless communication between the simulation world and the real world components of the Truck Platooning system.
 
-### how to test
-* first you need to clone the repo
-``` bash
-git clone https://github.com/proxy
+## Key Features
+
+### 1. `Communication Middleware`
+
+The Proxy Subsystem incorporates a robust communication middleware to efficiently transfer messages between the simulation world and real-world components.
+
+### 2. `Message Translation`
+
+It is responsible for translating messages between the different formats used in the simulation and physical systems, ensuring seamless interoperability.
+
+### 3. `Real-time Interaction`
+
+Enables real-time interaction between the simulated and physical components, allowing for dynamic adjustments and responsiveness within the Truck Platooning system.
+
+### 4. `MQTT broker`
+
+This proxy communicate over ```MQTT``` protocol, and uses ```Paho-mqtt``` library to establish a client to the proxy.
+
+## Directories
+
+### 1. `Proxy/`
+
+- This is the main part of the repo.
+- This code is containing the files of call-back functioons and the proxy logic code.
+- This code is to be ```refactored``` based on the redesign process.
+
+### 2. `CarlaLikeApplication/`
+
+- This code establishes a way of simulating Carla environment.
+- Carla Provides the system with the real-sensors' readings and accepts the actions of each target.
+- This code prove this concept using file handling process.
+
+### 3. `TargetLikeApplication/`
+
+- This code establishes a way of simulating Target environment.
+- The target accepts the readings of the sensors and provide the actions to be sent back to Carla.
+- This code prove this concept using file handling process.
+
+## Installation
+
+You need to clone the rebo, build the code with g++ and link with paho libraries and then run ```mosquitto``` broker and then run the ```proxy```, ```carla```, and some instances of ```target```.
+
+### first you need to clone the repo
+
+```bash
+git clone https://github.com/ahmedrezkgabr/proxy.git
 cd proxy
 ```
-- then you need to build each application using g++ and link with paho libraries
 
-``` bash
-g++ -std=c++17 -o ./CarlaLikeApplication/carla ./CarlaLikeApplication/carla.cpp ./CarlaLikeApplication/FileHandling.cpp ./CarlaLikeApplication/MyCallBack.cpp -lpaho-mqttpp3 -lpaho-mqtt3a
+### build the source code (link with paho cpp)
 
-g++ -std=c++17 -o ./TargetLikeApplication/target ./TargetLikeApplication/target.cpp ./TargetLikeApplication/FileHandling.cpp ./TargetLikeApplication/MyCallBack.cpp -lpaho-mqttpp3 -lpaho-mqtt3a
+```bash
+g++ -std=c++17 -o Dir_path/Proxy/proxy Dir_path/Proxy/proxy.cpp Dir_path/Proxy/MyCallBack.cpp -lpaho-mqttpp3 -lpaho-mqtt3a
 
-g++ -std=c++17 -o ./Proxy/proxy ./Proxy/proxy.cpp ./Proxy/FileHandling.cpp ./Proxy/MyCallBack.cpp -lpaho-mqttpp3 -lpaho-mqtt3a
+g++ -std=c++17 -o Dir_path/TargetLikeApplication/target Dir_path/TargetLikeApplication/target.cpp Dir_path/TargetLikeApplication/FileHandling.cpp Dir_path/TargetLikeApplication/MyCallBack.cpp -lpaho-mqttpp3 -lpaho-mqtt3a
+
+g++ -std=c++17 -o Dir_path/CarlaLikeApplication/carla Dir_path/CarlaLikeApplication/carla.cpp Dir_path/CarlaLikeApplication/FileHandling.cpp Dir_path/CarlaLikeApplication/MyCallBack.cpp -lpaho-mqttpp3 -lpaho-mqtt3a
 ```
-- then run each application in a seperate terminal and do not forget to run the MQTT broker also
+
+You now have a three executables ```Dir_path/CarlaLikeApplication/carla```, ```Dir_path/TargetLikeApplication/target```, and ```Dir_path/Proxy/proxy```
+
+### run the broker
+
+```bash
+mosquitto -v
+```
+
+### run carla
+
+```bash
+Dir_path/CarlaLikeApplication/carla
+```
+
+### run instances of target
+
+give the instance id, files of logging
+
+```bash
+Dir_path/TargetLikeApplication/target 01 file1.csv file2.csv
+```
+
+```repeat the last command if you need other instance, change the id and the files```
+
+### run the proxy
+
+```bash
+Dir_path/Proxy/proxy
+```
