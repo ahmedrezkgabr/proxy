@@ -12,24 +12,26 @@
 #include "FileHandling.hpp"
 #include "MyCallBack.hpp"
 
+const std::string DFLT_ADDRESS{"mqtt://localhost:1883"};
+const int QOS{1};
+const std::string DEF_ID{"01"};
+
+const auto PERIOD = std::chrono::seconds(5);
+const int MAX_BUFFERED_MSGS = 120; // 120 * 5sec => 10min off-line buffering
 
 int main(int argc, char *argv[])
 {
     /*const intialization*/
-    const std::string RPI_ID{argv[1]};
-    std::cout<<RPI_ID<<std::endl;
-    const std::string DFLT_ADDRESS{"mqtt://localhost:1883"};
-    const std::string CLIENT_ID{"rpi_"+RPI_ID};
+    /* init */
+    /* get the passed argument to be the RPI_ID, INPUT_FILE_PATH, and OUTPUT_FILE_PATH in this order */
+    std::string RPI_ID = (argc > 1) ? std::string(argv[1]) : "01";
+    std::string INPUT_FILE_PATH = (argc > 2) ? std::string(argv[2]) : "./actions.csv";
+    std::string OUTPUT_FILE_PATH = (argc > 3) ? std::string(argv[3]) : "./sensors.csv";
+
+    const std::string CLIENT_ID{"rpi_" + RPI_ID};
     const std::string TOPIC_TO_PUB{"rpi/" + RPI_ID + "/actions"};
     const std::string TOPIC_TO_SUB{"rpi/" + RPI_ID + "/sensors"};
-    const int QOS{1};
-    const std::string INPUT_FILE_PATH{argv[2]};//actions file
-    std::cout<<INPUT_FILE_PATH<<std::endl;
-    const std::string OUTPUT_FILE_PATH{argv[3]};//sensors file
-     std::cout<<OUTPUT_FILE_PATH<<std::endl;
-    const auto PERIOD = std::chrono::seconds(5);
-    const int MAX_BUFFERED_MSGS = 120; // 120 * 5sec => 10min off-line buffering
-    
+
     /* init */
     /* get the passed argument to be the address, if not use the defualt */
     std::string address = DFLT_ADDRESS;
