@@ -5,35 +5,37 @@
 const std::string DEFAULT_ADDRESS{"mqtt://localhost:1883"};
 const std::string CLIENT_ID{"proxy"};
 
-/*Carla Topics*/
+/* Carla's Topics */
 const std::string TOPIC_CARLA_ACTIONS_PUB{"carla/actions"};
 const std::string TOPIC_CARLA_SENSORS_SUB{"carla/sensors"};
 
-/*Rpi01 Topics*/
+/* Rpi01's Topics */
 const std::string TOPIC_RPI01_SENSORS_PUB{"rpi/01/sensors"};
-const std::string TOPIC_RPI01_ACIONS_SUB{"rpi/01/actions"};
+const std::string TOPIC_RPI01_ACTIONS_SUB{"rpi/01/actions"};
 
-/*Rpi02 Topics*/
+/* Rpi02's Topics */
 const std::string TOPIC_RPI02_SENSORS_PUB{"rpi/02/sensors"};
-const std::string TOPIC_RPI02_ACIONS_SUB{"rpi/02/actions"};
+const std::string TOPIC_RPI02_ACTIONS_SUB{"rpi/02/actions"};
 
-/*quality of service*/
+/* quality of service */
 const int QOS = 1;
-/*creating object duration of 5 seconds to be used for sleeping*/
+
+/* creating object duration of 5 seconds to be used for sleeping */
 const auto PERIOD = std::chrono::seconds(5);
 const int MAX_BUFFERED_MSGS = 120; // 120 * 5sec => 10min off-line buffering
 
 int main(int argc, char *argv[])
 {
+    /* init */
     /* get the passed argument to be the address, if not use the defualt */
-    std::string address =DEFAULT_ADDRESS;
+    std::string address = (argc > 1) ? std::string(argv[1]) : DEFAULT_ADDRESS;
 
-    /* create a client object */
+    /* create a client object */ /* NULL for the persistence */
     mqtt::async_client client(address, CLIENT_ID, MAX_BUFFERED_MSGS, NULL);
 
     /* create a callBack object and set the callBack */
     MyCallBack callback;
-    callback.msg_actions.resize(2);
+    callback.msg.resize(3);
     client.set_callback(callback);
 
     /* set connection options */
@@ -43,13 +45,19 @@ int main(int argc, char *argv[])
                         .automatic_reconnect(true)
                         .finalize();
 
-    /* creating topics for subscribing and publishing */
-                                                            /*carla*/                                       /*Rpi01                                               Rpi02*/
-     std::vector<mqtt::topic>top_pub{{client, TOPIC_CARLA_ACTIONS_PUB, QOS, true},{client, TOPIC_RPI01_SENSORS_PUB, QOS, true},{client, TOPIC_RPI02_SENSORS_PUB, QOS, true}};
-     std::vector<mqtt::topic>top_sub{{client, TOPIC_CARLA_SENSORS_SUB, QOS, true},{client, TOPIC_RPI01_ACIONS_SUB, QOS, true},{client, TOPIC_RPI02_ACIONS_SUB, QOS, true}};
+    /* topics vectors (@ index 0 -> carla), (@ other indeces -> rpi) */
+    /* creating topics for publishing */
+    std::vector<mqtt::topic> top_pub{{client, TOPIC_CARLA_ACTIONS_PUB, QOS, true},
+                                     {client, TOPIC_RPI01_SENSORS_PUB, QOS, true},
+                                     {client, TOPIC_RPI02_SENSORS_PUB, QOS, true}};
+
+    /* creating topics for subscribtion */
+    std::vector<mqtt::topic> top_sub{{client, TOPIC_CARLA_SENSORS_SUB, QOS, true},
+                                     {client, TOPIC_RPI01_ACTIONS_SUB, QOS, true},
+                                     {client, TOPIC_RPI02_ACTIONS_SUB, QOS, true}};
 
     /* high level data dealing */
-    std::string Carla_Msg;
+    std::string msg_senToCarla;
 
     try
     {
@@ -58,31 +66,37 @@ int main(int argc, char *argv[])
         client.connect(connOpts)->wait();
         std::cout << "OK" << std::endl;
 
-        /*subscribe TOPIC_CARLA_SENSORS_SUB */
+        /* subscribe on the subscribtion topics */
         top_sub[0].subscribe();
-        /*subscribe TOPIC_RPI01_ACIONS_SUB */
         top_sub[1].subscribe();
-         /*subscribe TOPIC_RPI02_ACIONS_SUB */
         top_sub[2].subscribe();
-        std::cout<<"Subsribtion done ..."<<std::endl;
+
         while (true)
         {
             if (callback.recived_msg_flag & 1) /* received sensors message */
             {
-        
+                /* some mechanism to parse the message */
 
-                /*publish data to rpi*/
-                top_pub[1].publish(callback.msg_sensors);
-                top_pub[2].publish(callback.msg_sensors);
+                /* publish data to rpi each with its parsed message */
+                top_pub[1].publish(callback.msg[0]);
+                top_pub[2].publish(callback.msg[0]);
+
+                /* clear the flag's bit */
                 callback.recived_msg_flag &= ~(1);
             }
 
-            if (callback.recived_msg_flag & 2 && callback.recived_msg_flag & 4) /* received actions message */
+            /* 6 and 7 indicates 0bxxxxx11x */ /* the size of vector reflects these two numbers */
+            /* (2^sizeof(vector)) - 1, and (2^sizeof(vector)) - 2 */
+            if ((callback.recived_msg_flag == 6) || (callback.recived_msg_flag == 7)) /* received actions messages of actions */
             {
-                
-                /*Rpi01+Rpi02*/
-                Carla_Msg=callback.msg_actions[0]+","+callback.msg_actions[1];
-                top_pub[0].publish(Carla_Msg);
+
+                /* some mechanism to compose the messages into one message */
+                msg_senToCarla = callback.msg[1] + "," + callback.msg[2];
+
+                /* publish the whole message of actions to carla */
+                top_pub[0].publish(msg_senToCarla);
+
+                /* clear the flag's bits */
                 callback.recived_msg_flag &= ~(6);
             }
         }

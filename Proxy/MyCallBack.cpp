@@ -8,23 +8,25 @@ void MyCallBack::connection_lost(const std::string &cause)
 void MyCallBack::message_arrived(mqtt::const_message_ptr msg)
 {
     std::string topic = msg->get_topic();
+    uint8_t index = 255;
 
+    /* carla */
     if (topic == "carla/sensors")
     {
-        recived_msg_flag |= 1;
-        this->msg_sensors = msg->to_string();
+        index = 0;
     }
-    else if (topic == "rpi/01/actions")
+    else
     {
-        
-        recived_msg_flag |= 2;
-        this->msg_actions[0]=msg->to_string();
+        /* getting the id of the rpi */
+        index = std::stoi(topic.substr(4, 2));
     }
-    else if(topic == "rpi/02/actions")
-    {
-        recived_msg_flag |= 4;
-        this->msg_actions[1]=msg->to_string();
-    }
+    /* set the corresponding bit */
+    recived_msg_flag |= (1 << index);
+
+    /* set the corresponding string */
+    this->msg[index] = msg->to_string();
+
+    /* logging information */
     std::cout << "Message arrived on topic '"
               << msg->get_topic() << "': " << msg->to_string() << std::endl;
 }
