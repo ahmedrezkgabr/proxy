@@ -25,11 +25,10 @@ int main(int argc, char *argv[])
     /* setting the configuarations */
     std::cout << "Loading configuaration from: " << myProxy.getConfigFilePath() << std::endl;
 
-    if (!myProxy.loadConfiguaration())
+    if (myProxy.loadConfiguaration() == Proxy_Error_t::NOT_OK)
     {
         std::cerr << "Unable to load configuaration!" << std::endl;
         std::cerr << "LOADING THE DEFAULT CONFIGUARATION!!" << std::endl;
-        myProxy.loadDefaultConfiguaration();
     }
 
     try
@@ -43,21 +42,21 @@ int main(int argc, char *argv[])
 
         while (true)
         {
-            if (myProxy.getRxFalg() == CARLA) /* received from carla */
+            if (myProxy.getRxFalg() == Proxy_Flag_t::CARLA) /* received from carla */
             {
                 /* parsing information */
 
                 /* publish to RPIS */
-                myProxy.publish("RPIS");
+                myProxy.publish(Proxy_Flag_t::RPIS);
 
                 /* clear the flag */
             }
-            else if (myProxy.getRxFalg() == RPIS)
+            else if (myProxy.getRxFalg() == Proxy_Flag_t::RPIS)
             {
                 /* composing information */
 
                 /* publish to CARLA */
-                myProxy.publish("CARLA");
+                myProxy.publish(Proxy_Flag_t::CARLA);
 
                 /* clear the flag */
             }
