@@ -14,3 +14,13 @@ Proxy_Error_t Proxy::setConfigFilePath(std::string filePath)
     this->configFilePath = filePath;
     return Proxy_Error_t::OK;
 }
+
+/**
+ * @brief Gets the configuration File Path.
+ *
+ * @return std::string as the file path.
+ */
+std::string Proxy::getConfigFilePath(void)
+{
+    return this->configFilePath;
+}
