@@ -38,7 +38,7 @@ private:
     std::vector<std::string> sensorsMsgs;
     std::vector<std::string> actionsMsgs;
 
-    std::string configFilePath{"./.config"};
+    std::string configFilePath{"./config.ini"};
     Proxy_Flag_t Rx;
 
 public:
