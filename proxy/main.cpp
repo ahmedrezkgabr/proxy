@@ -1,7 +1,8 @@
 #include <iostream>
+#include "config.hpp"
 #include "proxy.hpp"
 
-const std::string DEFAULT_CONFIG_FILEPATH{"./.config"};
+const std::string DEFAULT_CONFIG_FILEPATH{"./../config.ini"};
 
 /**
  * @brief The main function that implements the core logic of the program.
@@ -17,55 +18,62 @@ const std::string DEFAULT_CONFIG_FILEPATH{"./.config"};
  */
 int main(int argc, char *argv[])
 {
-    Proxy myProxy;
+    ConfigHandler myConfig;
 
     /* getting the file of configuaration */
-    myProxy.setConfigFilePath((argc > 1) ? std::string(argv[1]) : DEFAULT_CONFIG_FILEPATH);
+    myConfig.setConfigFilePath((argc > 1) ? std::string(argv[1]) : DEFAULT_CONFIG_FILEPATH);
 
     /* setting the configuarations */
-    std::cout << "Loading configuaration from: " << myProxy.getConfigFilePath() << std::endl;
+    std::cout << "Loading configuaration from: " << myConfig.getConfigFilePath() << std::endl;
 
-    if (!myProxy.loadConfiguaration())
+    if (myConfig.loadConfiguaration() == Config_Error_t::NOT_OK)
     {
         std::cerr << "Unable to load configuaration!" << std::endl;
         std::cerr << "LOADING THE DEFAULT CONFIGUARATION!!" << std::endl;
-        myProxy.loadDefaultConfiguaration();
     }
+
+    Proxy myProxy(myConfig);
+
 
     try
     {
         /* Connect to the MQTT broker and wait till done */
         std::cout << "Connecting to server '" << myProxy.get_server_uri() << "'..." << std::flush;
-        myProxy.connect()->wait();
+        myProxy.connect();
         std::cout << "OK" << std::endl;
 
         myProxy.subscribe(); /* will be overloaded to match void input */
 
         while (true)
         {
-            if (myProxy.getRxFalg() == CARLA) /* received from carla */
+            /* interface */
+            if (myProxy.getRxFalg() == Proxy_Flag_t::CARLA) /* received from carla */
             {
                 /* parsing information */
+                myProxy.parse();
 
                 /* publish to RPIS */
-                myProxy.publish("RPIS");
+                myProxy.publish(Proxy_Flag_t::CARLA);
 
                 /* clear the flag */
+                myProxy.clearRxFlag(Proxy_Flag_t::CARLA);
             }
-            else if (myProxy.getRxFalg() == RPIS)
+            else if (myProxy.getRxFalg() == Proxy_Flag_t::RPIS)
             {
                 /* composing information */
+                myProxy.compose();
 
                 /* publish to CARLA */
-                myProxy.publish("CARLA");
+                myProxy.publish(Proxy_Flag_t::RPIS);
 
                 /* clear the flag */
+                myProxy.clearRxFlag(Proxy_Flag_t::RPIS);
             }
         }
 
         /* disconnect and wait till done */
         std::cout << "\nDisconnecting..." << std::flush;
-        myProxy.disconnect()->wait();
+        myProxy.disconnect();
         std::cout << "OK" << std::endl;
     }
     catch (const std::exception &e)
