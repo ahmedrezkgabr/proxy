@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(proxy)
+project(target)
 
 set(CMAKE_CXX_STANDARD 11)
 
@@ -14,8 +14,8 @@ set(SOURCE_FILES
     )
 
 # Create an executable
-add_executable(proxy ${SOURCE_FILES})
+add_executable(target ${SOURCE_FILES})
 
 # Link against the Paho MQTT C++ library
-target_link_libraries(proxy PahoMqttCpp::paho-mqttpp3)
+target_link_libraries(target PahoMqttCpp::paho-mqttpp3)
 
