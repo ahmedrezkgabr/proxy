@@ -1,33 +1,17 @@
-#ifndef CARLA__HPP_
-#define CARLA__HPP_
-
-#include <iostream>
+#ifndef CARLA_HPP
+#define CARLA_HPP
 #include "mqtt/async_client.h"
-
-enum En_Flag_t
+class MyCallBack : public virtual mqtt::callback
 {
-    CARLA,
-    RPIS,
-    ACTIONS,
-    SENSORS
-};
-
-class Carla : private mqtt::async_client
-{
-private:
-    /* data */
 public:
-    Carla();
-    ~Carla();
-    void setConfigFilePath(std::string);
-    bool loadConfiguaration();
-    void loadDefaultConfiguaration();
-    std::string getConfigFilePath();
-    mqtt::token_ptr subscribe(void);
-    mqtt::delivery_token_ptr publish();
-    uint8_t getRxFalg();
-    void getData();
-    void logData();
+    int recived_msg_flag = 0;
+    std::string msg;
+    uint64_t counter_received = 0;
+    uint64_t counter_sent = 0;
+    /* overriding the functions on every action may happen */
+    void connection_lost(const std::string &cause) override;         /* call back function called when lossing the connection with the broker */
+    void message_arrived(mqtt::const_message_ptr msg) override;      /* call back function called when receiving a message */
+    void delivery_complete(mqtt::delivery_token_ptr token) override; /* call back function called when delivery complete */
 };
 
-#endif /* CARLA__HPP_ */
+#endif
