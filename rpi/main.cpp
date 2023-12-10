@@ -25,8 +25,8 @@ int main(int argc, char *argv[])
     /* init */
     /* get the passed argument to be the RPI_ID, INPUT_FILE_PATH, and OUTPUT_FILE_PATH in this order */
     std::string RPI_ID = (argc > 1) ? std::string(argv[1]) : "01";
-    std::string INPUT_FILE_PATH = (argc > 2) ? std::string(argv[2]) : "./actions.csv";
-    std::string OUTPUT_FILE_PATH = (argc > 3) ? std::string(argv[3]) : "./sensors.csv";
+    std::string INPUT_FILE_PATH = (argc > 2) ? std::string(argv[2]) : "../../.logs/" + std::string(argv[1]) + "/actions.csv";
+    std::string OUTPUT_FILE_PATH = (argc > 3) ? std::string(argv[3]) : "../../.logs/" + std::string(argv[1]) + "/sensors.csv";
 
     const std::string CLIENT_ID{"rpi_" + RPI_ID};
     const std::string TOPIC_TO_PUB{"rpi/" + RPI_ID + "/actions"};
