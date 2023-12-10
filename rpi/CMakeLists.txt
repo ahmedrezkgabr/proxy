@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(target)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 # Find the Paho MQTT C++ package
 find_package(PahoMqttCpp REQUIRED)
