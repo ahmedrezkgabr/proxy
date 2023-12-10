@@ -22,8 +22,8 @@ const std::string TOPIC_TO_SUB{"carla/actions"};
 
 const int QOS{1};
 
-const std::string INPUT_FILE_PATH{"./sensors.csv"};
-const std::string OUTPUT_FILE_PATH{"./actions.csv"};
+const std::string INPUT_FILE_PATH{"../../.logs/carla/sensors.csv"};
+const std::string OUTPUT_FILE_PATH{"../../.logs/carla//actions.csv"};
 
 const auto PERIOD = std::chrono::seconds(5);
 const int MAX_BUFFERED_MSGS = 120; // 120 * 5sec => 10min off-line buffering
