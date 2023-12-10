@@ -1,8 +1,0 @@
-# .gitignore
-./Proxy/proxy
-./CarlaLikeApplication/carla
-./CarlaLikeApplication/*.csv
-./TargetLikeApllication/*.csv
-./TargetLikeApplication/target
-./vscode/*
-
