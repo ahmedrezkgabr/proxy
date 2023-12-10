@@ -13,16 +13,13 @@ Proxy::Proxy(const ConfigHandler &config) : proxyClient(config.address, config.c
                                                                     std::string topic = msg->get_topic();
                                                                     std::string content = msg->to_string();
 
-                                                                    /* which topic i received on */
-                                                                    for(uint8_t i = 0; i < this->numberOfRpis + 1; i++)
+                                                                    for(uint8_t i = 0; i < this->numberOfRpis + 1; i++)/* which topic i received on */
                                                                     {
                                                                         if(topic == config.subTopicsNames[i])
                                                                         {
-                                                                            /* set the corresponding bit */
-                                                                            this->Rx |= (1 << i);
-
-                                                                            /* cpy the content */
-                                                                            this->sensorsMsgs[i] = content;
+                                                                            this->Rx |= (1 << i);                   /* set the corresponding bit */
+                                                                            if(!i){this->sensorsMsgs[i] = content;} /* cpy the content */
+                                                                            else{this->actionsMsgs[i] = content;}   /* cpy the content */
                                                                         }
                                                                     } });
 
@@ -164,7 +161,7 @@ void Proxy::clearRxFlag(Proxy_Flag_t type)
     /* clear the corresponding bit of carla (bit-0) */
     if (type == Proxy_Flag_t::CARLA)
         this->Rx &= (~(1));
-    
+
     /* clear the corresponding bits of rpis bits[1:numberOfRpis] */
     else
         this->Rx &= (~(this->maskRx));
