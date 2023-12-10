@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
-project(target)
+project(rpi)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 # Find the Paho MQTT C++ package
 find_package(PahoMqttCpp REQUIRED)
@@ -14,8 +14,8 @@ set(SOURCE_FILES
     )
 
 # Create an executable
-add_executable(target ${SOURCE_FILES})
+add_executable(rpi ${SOURCE_FILES})
 
 # Link against the Paho MQTT C++ library
-target_link_libraries(target PahoMqttCpp::paho-mqttpp3)
+target_link_libraries(rpi PahoMqttCpp::paho-mqttpp3)
 
