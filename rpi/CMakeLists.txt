@@ -9,7 +9,8 @@ find_package(PahoMqttCpp REQUIRED)
 # Add your source files
 set(SOURCE_FILES
   main.cpp
-  rpi.cpp 
+  rpi.cpp
+  filehandling.cpp 
     )
 
 # Create an executable
