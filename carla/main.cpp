@@ -1,81 +1,99 @@
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <fstream>
+#include <string>
+#include <thread>
+#include <chrono>
 #include <iostream>
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include "mqtt/async_client.h"
+#include "filehandling.hpp"
 #include "carla.hpp"
 
-const std::string DEFAULT_CONFIG_FILEPATH{"./.config"};
+const std::string DFLT_ADDRESS{"mqtt://localhost:1883"};
+const std::string CLIENT_ID{"carla"};
+const std::string TOPIC_TO_PUB{"carla/sensors"};
+const std::string TOPIC_TO_SUB{"carla/actions"};
 
-/**
- * @brief The main function implementing the core logic of the program.
- *
- * This function initializes a Carla object, loads configuration settings,
- * connects to an MQTT broker, subscribes to topics, retrieves sensor data,
- * publishes sensor data, and handles received actions. It runs indefinitely
- * until manually terminated.
- *
- * @param argc The number of command-line arguments.
- * @param argv An array of command-line arguments.
- *
- * @return Returns 0 on successful execution, and 1 if an exception occurs.
- *
- * @note The first command-line argument (if provided) is assumed to be the
- *       configuration file path; otherwise, a default path is used.
- *
- * @see Carla
- */
+const int QOS{1};
+
+const std::string INPUT_FILE_PATH{"./sensors.csv"};
+const std::string OUTPUT_FILE_PATH{"./actions.csv"};
+
+const auto PERIOD = std::chrono::seconds(5);
+const int MAX_BUFFERED_MSGS = 120; // 120 * 5sec => 10min off-line buffering
+
 int main(int argc, char *argv[])
 {
-    Carla myCarla;
+    /* init */
+    /* get the passed argument to be the address, if not use the defualt */
+    std::string address = (argc > 1) ? std::string(argv[1]) : DFLT_ADDRESS;
 
-    /* getting the file of configuaration */
-    myCarla.setConfigFilePath((argc > 1) ? std::string(argv[1]) : DEFAULT_CONFIG_FILEPATH);
+    /* create a client object */
+    mqtt::async_client client(address, CLIENT_ID, MAX_BUFFERED_MSGS, NULL);
 
-    /* setting the configuarations */
-    std::cout << "Loading configuaration from: " << myCarla.getConfigFilePath() << std::endl;
+    /* create a callBack object and set the callBack */
+    MyCallBack callback;
+    client.set_callback(callback);
 
-    if (!myCarla.loadConfiguaration())
-    {
-        std::cerr << "Unable to load configuaration!" << std::endl;
-        std::cerr << "LOADING THE DEFAULT CONFIGUARATION!!" << std::endl;
-        myCarla.loadDefaultConfiguaration();
-    }
+    /* set connection options */
+    auto connOpts = mqtt::connect_options_builder()
+                        .keep_alive_interval(MAX_BUFFERED_MSGS * PERIOD)
+                        .clean_session(true)
+                        .automatic_reconnect(true)
+                        .finalize();
+
+    /* creating the topics */
+    mqtt::topic topForBub(client, TOPIC_TO_PUB, QOS, true);
+    mqtt::topic topForSub(client, TOPIC_TO_SUB, QOS, true);
+
+    /* high level data dealing */
+    FileHandling handler;
+    std::string sensors;
 
     try
     {
         /* Connect to the MQTT broker and wait till done */
-        std::cout << "Connecting to server '" << myCarla.get_server_uri() << "'..." << std::flush;
-        myCarla.connect()->wait();
+        std::cout << "Connecting to server '" << address << "'..." << std::flush;
+        client.connect(connOpts)->wait();
         std::cout << "OK" << std::endl;
 
-        myCarla.subscribe(); /* will be overloaded to match void input */
-
+        /* subscribe for the actions messages */
+        topForSub.subscribe();
         while (true)
         {
-            /* get sensors' data */
-            myCarla.getData();
+            /* getting sensors data from carla */
+            sensors = handler.getData(INPUT_FILE_PATH);
 
-            /* publish sensors' data */
-            myCarla.publish();
+            /* publish the new data each to its topic */
+            topForBub.publish(sensors);
+            callback.counter_sent++;
 
-            if (myCarla.getRxFalg() == ACTIONS) /* received from rpi */
+            if (callback.recived_msg_flag)
             {
-                /* parsing information */
-
-                /* logging received actions' data */
-                myCarla.logData();
-
-                /* clear the flag */
+                handler.setData(callback.msg, OUTPUT_FILE_PATH);
+                callback.recived_msg_flag = 0;
             }
+
+            /* wait */
+            sleep(2);
         }
 
         /* disconnect and wait till done */
         std::cout << "\nDisconnecting..." << std::flush;
-        myCarla.disconnect()->wait();
+        client.disconnect()->wait();
         std::cout << "OK" << std::endl;
     }
-    catch (const std::exception &e)
+    catch (const mqtt::exception &exc)
     {
         /* print the exception error */
-        std::cerr << e.what() << '\n';
-
+        std::cerr << exc.what() << std::endl;
         return 1;
     }
+    return 0;
 }
