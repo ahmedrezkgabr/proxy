@@ -3,6 +3,7 @@ project(carla)
 
 set(CMAKE_CXX_STANDARD 17)
 
+
 # Find the Paho MQTT C++ package
 find_package(PahoMqttCpp REQUIRED)
 
