@@ -76,8 +76,6 @@ public:
     uint8_t getQualityOfService();
     bool getRetainedFlag();
 
-    std::string getConfigFilePath();
-
 private:
     ClientData myClientData;
     TopicsData myTopicsData;
