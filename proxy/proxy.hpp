@@ -42,7 +42,7 @@ public:
      */
     Proxy() = delete;
 
-    Proxy(const ConfigHandler &);
+    Proxy(ConfigHandler &);
 
     /**
      * @brief Destructor
