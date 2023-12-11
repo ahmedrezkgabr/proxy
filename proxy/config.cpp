@@ -121,3 +121,8 @@ uint8_t ConfigHandler::getNumberOfRpis()
 {
     return myTopicsData.numberOfRpis;
 }
+
+uint8_t ConfigHandler::getQualityOfService()
+{
+    return myTopicsData.qualityOfService;
+}
