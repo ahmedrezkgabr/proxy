@@ -86,3 +86,8 @@ std::string ConfigHandler::getClientID()
 {
     return myClientData.clientId;
 }
+
+uint32_t ConfigHandler::getMaxBufMsgs()
+{
+    return myClientData.maxBufMsgs;
+}
