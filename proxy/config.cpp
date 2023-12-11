@@ -56,7 +56,7 @@ Config_Error_t ConfigHandler::loadConfiguaration(void)
     this->myClientData.cleanSession = configTree.get<bool>("client.cleanSession");
     this->myClientData.autoReconnect = configTree.get<bool>("client.autoReconnect");
     this->myClientData.keepAliveTime = configTree.get<uint64_t>("client.keepAliveTime");
-    
+
     this->myTopicsData.qualityOfService = configTree.get<uint8_t>("topics.qualityOfService");
     this->myTopicsData.retainedFlag = configTree.get<bool>("topics.retainedFlag");
 
@@ -80,4 +80,9 @@ Config_Error_t ConfigHandler::loadConfiguaration(void)
 std::string ConfigHandler::getAddress()
 {
     return myClientData.address;
+}
+
+std::string ConfigHandler::getClientID()
+{
+    return myClientData.clientId;
 }
