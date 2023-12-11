@@ -21,6 +21,16 @@ struct ClientData
     uint64_t keepAliveTime;
 };
 
+struct TopicsData
+{
+    std::vector<std::string> pubTopicsNames;
+    std::vector<std::string> subTopicsNames;
+    uint8_t numberOfRpis;
+    uint8_t qualityOfService;
+    bool retainedFlag;
+};
+
+
 class ConfigHandler
 {
 public:
@@ -69,16 +79,8 @@ public:
     std::string getConfigFilePath();
 
 private:
-    /* client */
     ClientData myClientData;
-
-    /* topics */
-    std::vector<std::string> pubTopicsNames;
-    std::vector<std::string> subTopicsNames;
-    uint8_t numberOfRpis;
-    uint8_t qualityOfService;
-    bool retainedFlag;
-
+    TopicsData myTopicsData;
     std::string configFilePath{"./../config.ini"};
 };
 
