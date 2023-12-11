@@ -101,3 +101,8 @@ bool ConfigHandler::getAutoReconnect()
 {
     return myClientData.autoReconnect;
 }
+
+uint64_t ConfigHandler::getKeepAliveTime()
+{
+    return myClientData.keepAliveTime;
+}
