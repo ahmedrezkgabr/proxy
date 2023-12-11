@@ -43,6 +43,22 @@ public:
      */
     Config_Error_t loadConfiguaration(void);
 
+    std::string getAddress();
+    std::string getClientID();
+    uint32_t getMaxBufMsgs();
+    bool getCleanSession();
+    bool getAutoReconnect();
+    uint64_t getKeepAliveTime();
+
+    std::vector<std::string> getPubTocpicsNames();
+    std::vector<std::string> getSubTocpicsNames();
+
+    uint8_t getNumberOfRpis();
+    uint8_t getQualityOfService();
+    bool getRetainedFlag();
+
+    std::string getConfigFilePath();
+
 private:
     /* client */
     std::string address;
