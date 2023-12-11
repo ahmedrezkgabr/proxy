@@ -116,3 +116,8 @@ topicsNames_t ConfigHandler::getSubTocpicsNames()
 {
     return myTopicsData.subTopicsNames;
 }
+
+uint8_t ConfigHandler::getNumberOfRpis()
+{
+    return myTopicsData.numberOfRpis;
+}
