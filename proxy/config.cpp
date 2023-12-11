@@ -91,3 +91,8 @@ uint32_t ConfigHandler::getMaxBufMsgs()
 {
     return myClientData.maxBufMsgs;
 }
+
+bool ConfigHandler::getCleanSession()
+{
+    return myClientData.cleanSession;
+}
