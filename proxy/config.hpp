@@ -11,6 +11,15 @@ enum class Config_Error_t
 };
 
 /* data */
+struct ClientData
+{
+    std::string address;
+    std::string clientId;
+    uint32_t maxBufMsgs;
+    bool cleanSession;
+    bool autoReconnect;
+    uint64_t keepAliveTime;
+};
 
 class ConfigHandler
 {
@@ -61,12 +70,7 @@ public:
 
 private:
     /* client */
-    std::string address;
-    std::string clientId;
-    uint32_t maxBufMsgs;
-    bool cleanSession;
-    bool autoReconnect;
-    uint64_t keepAliveTime;
+    ClientData myClientData;
 
     /* topics */
     std::vector<std::string> pubTopicsNames;
