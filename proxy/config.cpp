@@ -111,3 +111,8 @@ topicsNames_t ConfigHandler::getPubTocpicsNames()
 {
     return myTopicsData.pubTopicsNames;
 }
+
+topicsNames_t ConfigHandler::getSubTocpicsNames()
+{
+    return myTopicsData.subTopicsNames;
+}
