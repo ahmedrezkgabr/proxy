@@ -76,3 +76,8 @@ Config_Error_t ConfigHandler::loadConfiguaration(void)
 
     return Config_Error_t::OK;
 }
+
+std::string ConfigHandler::getAddress()
+{
+    return myClientData.address;
+}
