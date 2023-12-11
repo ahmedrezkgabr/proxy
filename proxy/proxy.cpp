@@ -1,10 +1,11 @@
 #include <iostream>
 #include <math.h>
+#include <vector>
 #include "config.hpp"
 #include "mqtt/async_client.h"
 #include "proxy.hpp"
 
-Proxy::Proxy(const ConfigHandler &config) : proxyClient(const_cast<ConfigHandler &>(config).getAddress(), const_cast<ConfigHandler &>(config).getClientID(), const_cast<ConfigHandler &>(config).getMaxBufMsgs(), nullptr)
+Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.getClientID(),config.getMaxBufMsgs(), nullptr)
 {
     /* set the call back of message arrival */
     this->proxyClient.set_message_callback([&](mqtt::const_message_ptr msg)
@@ -12,10 +13,11 @@ Proxy::Proxy(const ConfigHandler &config) : proxyClient(const_cast<ConfigHandler
                                             /* take the content of the message */
                                             std::string topic = msg->get_topic();
                                             std::string content = msg->to_string();
+                                            std::vector<std::string>topicsNames=config.getSubTocpicsNames();
 
                                             for(uint8_t i = 0; i < this->numberOfRpis + 1; i++)/* which topic i received on */
                                             {
-                                                if(topic == const_cast<ConfigHandler &>(config).getSubTocpicsNames()[i])
+                                                if(topic == topicsNames[i])
                                                 {
                                                     this->Rx |= (1 << i);                   /* set the corresponding bit */
                                                     if(!i){this->sensorsMsgs[i] = content;} /* cpy the content */
