@@ -126,3 +126,8 @@ uint8_t ConfigHandler::getQualityOfService()
 {
     return myTopicsData.qualityOfService;
 }
+
+bool ConfigHandler::getRetainedFlag()
+{
+    return myTopicsData.retainedFlag;
+}
