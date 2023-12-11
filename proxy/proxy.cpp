@@ -13,6 +13,7 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.get
                                             /* take the content of the message */
                                             std::string topic = msg->get_topic();
                                             std::string content = msg->to_string();
+                                            /* get the topics names */
                                             std::vector<std::string>topicsNames=config.getSubTocpicsNames();
 
                                             for(uint8_t i = 0; i < this->numberOfRpis + 1; i++)/* which topic i received on */
@@ -44,7 +45,7 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.get
                                                            << std::endl; });
 
     /* set the number of rpis */
-    this->numberOfRpis = const_cast<ConfigHandler &>(config).getNumberOfRpis();
+    this->numberOfRpis =config.getNumberOfRpis();
 
     /* resize the messages data vectors */
     this->actionsMsgs.resize(this->numberOfRpis + 1);
@@ -56,8 +57,8 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.get
     /* create the topics of publishing and subscription */
     for (uint8_t i = 0; i < this->numberOfRpis + 1; i++)
     {
-        this->pubTopics.push_back({proxyClient, const_cast<ConfigHandler &>(config).getPubTocpicsNames()[i], const_cast<ConfigHandler &>(config).getQualityOfService(), const_cast<ConfigHandler &>(config).getRetainedFlag()});
-        this->subTopics.push_back({proxyClient, const_cast<ConfigHandler &>(config).getSubTocpicsNames()[i], const_cast<ConfigHandler &>(config).getQualityOfService(), const_cast<ConfigHandler &>(config).getRetainedFlag()});
+        this->pubTopics.push_back({proxyClient, config.getPubTocpicsNames()[i], config.getQualityOfService(), config.getRetainedFlag()});
+        this->subTopics.push_back({proxyClient, config.getSubTocpicsNames()[i], config.getQualityOfService(), config.getRetainedFlag()});
     }
 
     /* create a connection options handler */
