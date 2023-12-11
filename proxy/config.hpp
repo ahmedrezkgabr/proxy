@@ -50,7 +50,7 @@ public:
      *
      * @return std::string as the file path.
      */
-    std::string getConfigFilePath(void);
+    std::string getConfigFilePath();
 
     /**
      * @brief Loads the Configuaration.
