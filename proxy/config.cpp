@@ -106,3 +106,8 @@ uint64_t ConfigHandler::getKeepAliveTime()
 {
     return myClientData.keepAliveTime;
 }
+
+topicsNames_t ConfigHandler::getPubTocpicsNames()
+{
+    return myTopicsData.pubTopicsNames;
+}
