@@ -96,3 +96,8 @@ bool ConfigHandler::getCleanSession()
 {
     return myClientData.cleanSession;
 }
+
+bool ConfigHandler::getAutoReconnect()
+{
+    return myClientData.autoReconnect;
+}
