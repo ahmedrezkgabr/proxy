@@ -10,7 +10,7 @@ enum class Config_Error_t
     NOT_OK
 };
 
-/* data */
+using topicsNames_t = std::vector<std::string>;
 struct ClientData
 {
     std::string address;
@@ -23,8 +23,8 @@ struct ClientData
 
 struct TopicsData
 {
-    std::vector<std::string> pubTopicsNames;
-    std::vector<std::string> subTopicsNames;
+    topicsNames_t pubTopicsNames;
+    topicsNames_t subTopicsNames;
     uint8_t numberOfRpis;
     uint8_t qualityOfService;
     bool retainedFlag;
@@ -69,8 +69,8 @@ public:
     bool getAutoReconnect();
     uint64_t getKeepAliveTime();
 
-    std::vector<std::string> getPubTocpicsNames();
-    std::vector<std::string> getSubTocpicsNames();
+    topicsNames_t getPubTocpicsNames();
+    topicsNames_t getSubTocpicsNames();
 
     uint8_t getNumberOfRpis();
     uint8_t getQualityOfService();
