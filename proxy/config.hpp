@@ -10,29 +10,30 @@ enum class Config_Error_t
     NOT_OK
 };
 
-
-/* data */
-
-
-class ConfigHandler
+using topicsNames_t = std::vector<std::string>;
+struct ClientData
 {
-public:
-    /* client */
     std::string address;
     std::string clientId;
     uint32_t maxBufMsgs;
     bool cleanSession;
     bool autoReconnect;
     uint64_t keepAliveTime;
+};
 
-    /* topics */
-    std::vector<std::string> pubTopicsNames;
-    std::vector<std::string> subTopicsNames;
+struct TopicsData
+{
+    topicsNames_t pubTopicsNames;
+    topicsNames_t subTopicsNames;
     uint8_t numberOfRpis;
     uint8_t qualityOfService;
     bool retainedFlag;
+};
 
-    std::string configFilePath{"./../config.ini"};
+
+class ConfigHandler
+{
+public:
     ConfigHandler(/* args */);
     ~ConfigHandler();
 
@@ -49,7 +50,7 @@ public:
      *
      * @return std::string as the file path.
      */
-    std::string getConfigFilePath(void);
+    std::string getConfigFilePath();
 
     /**
      * @brief Loads the Configuaration.
@@ -60,6 +61,25 @@ public:
      * @return An enum of Proxy_Error_t.
      */
     Config_Error_t loadConfiguaration(void);
+
+    std::string getAddress();
+    std::string getClientID();
+    uint32_t getMaxBufMsgs();
+    bool getCleanSession();
+    bool getAutoReconnect();
+    uint64_t getKeepAliveTime();
+
+    topicsNames_t getPubTocpicsNames();
+    topicsNames_t getSubTocpicsNames();
+
+    uint8_t getNumberOfRpis();
+    uint8_t getQualityOfService();
+    bool getRetainedFlag();
+
+private:
+    ClientData myClientData;
+    TopicsData myTopicsData;
+    std::string configFilePath{"./../config.ini"};
 };
 
 #endif /* CONFIG__HHP_ */

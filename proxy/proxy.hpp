@@ -19,30 +19,15 @@ enum class Proxy_Flag_t
 
 class Proxy
 {
-private:
-    /* mqtt stuff */
-    mqtt::async_client proxyClient;
-    std::vector<mqtt::topic> pubTopics;
-    std::vector<mqtt::topic> subTopics;
 
-    /* in a struct */
-    /* data */
-    std::vector<std::string> sensorsMsgs;
-    std::vector<std::string> actionsMsgs;
-    mqtt::connect_options connectionOptions;
-    uint64_t Rx{0};
-    uint64_t maskRx{0};
-    uint8_t numberOfRpis{0};
-
-
-public:
+    public:
     /**
      * @brief Create a Proxy that can be used to communicate with an MQTT server.
      * @throw exception if an argument is invalid
      */
     Proxy() = delete;
 
-    Proxy(const ConfigHandler &);
+    Proxy(ConfigHandler &);
 
     /**
      * @brief Destructor
@@ -92,6 +77,21 @@ public:
     void compose();
 
     void clearRxFlag(Proxy_Flag_t type);
+    
+    private:
+    /* mqtt stuff */
+    mqtt::async_client proxyClient;
+    std::vector<mqtt::topic> pubTopics;
+    std::vector<mqtt::topic> subTopics;
+
+    /* in a struct */
+    /* data */
+    std::vector<std::string> sensorsMsgs;
+    std::vector<std::string> actionsMsgs;
+    mqtt::connect_options connectionOptions;
+    uint64_t Rx{0};
+    uint64_t maskRx{0};
+    uint8_t numberOfRpis{0};
 };
 
 #endif /* PROXY__HPP_ */

@@ -1,11 +1,20 @@
 #include <iostream>
 #include <math.h>
+#include <vector>
 #include "config.hpp"
 #include "mqtt/async_client.h"
 #include "proxy.hpp"
 
-Proxy::Proxy(const ConfigHandler &config) : proxyClient(config.address, config.clientId, config.maxBufMsgs, nullptr)
+Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(), config.getClientID(), config.getMaxBufMsgs(), nullptr)
 {
+    /* get the names of topics in a local variable */
+    topicsNames_t subTopicsNames = config.getSubTocpicsNames();
+    topicsNames_t pubTopicsNames = config.getPubTocpicsNames();
+
+    /* get qos and retained flag in a local variable */
+    uint8_t qualityOfService = config.getQualityOfService();
+    bool retainedFlag = config.getRetainedFlag();
+
     /* set the call back of message arrival */
     this->proxyClient.set_message_callback([&](mqtt::const_message_ptr msg)
                                            {
@@ -15,7 +24,7 @@ Proxy::Proxy(const ConfigHandler &config) : proxyClient(config.address, config.c
 
                                             for(uint8_t i = 0; i < this->numberOfRpis + 1; i++)/* which topic i received on */
                                             {
-                                                if(topic == config.subTopicsNames[i])
+                                                if(topic == this->subTopics[i].get_name())
                                                 {
                                                     this->Rx |= (1 << i);                   /* set the corresponding bit */
                                                     if(!i){this->sensorsMsgs[i] = content;} /* cpy the content */
@@ -42,7 +51,7 @@ Proxy::Proxy(const ConfigHandler &config) : proxyClient(config.address, config.c
                                                            << std::endl; });
 
     /* set the number of rpis */
-    this->numberOfRpis = config.numberOfRpis;
+    this->numberOfRpis = config.getNumberOfRpis();
 
     /* resize the messages data vectors */
     this->actionsMsgs.resize(this->numberOfRpis + 1);
@@ -54,15 +63,15 @@ Proxy::Proxy(const ConfigHandler &config) : proxyClient(config.address, config.c
     /* create the topics of publishing and subscription */
     for (uint8_t i = 0; i < this->numberOfRpis + 1; i++)
     {
-        this->pubTopics.push_back({proxyClient, config.pubTopicsNames[i], config.qualityOfService, config.retainedFlag});
-        this->subTopics.push_back({proxyClient, config.subTopicsNames[i], config.qualityOfService, config.retainedFlag});
+        this->pubTopics.push_back({proxyClient, pubTopicsNames[i], qualityOfService, retainedFlag});
+        this->subTopics.push_back({proxyClient, subTopicsNames[i], qualityOfService, retainedFlag});
     }
 
     /* create a connection options handler */
     this->connectionOptions = mqtt::connect_options_builder()
-                                  .keep_alive_interval(std::chrono::seconds(config.keepAliveTime))
-                                  .clean_session(config.cleanSession)
-                                  .automatic_reconnect(config.autoReconnect)
+                                  .keep_alive_interval(std::chrono::seconds(config.getKeepAliveTime()))
+                                  .clean_session(config.getCleanSession())
+                                  .automatic_reconnect(config.getAutoReconnect())
                                   .finalize();
 }
 
