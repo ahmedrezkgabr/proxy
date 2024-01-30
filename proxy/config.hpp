@@ -79,7 +79,7 @@ public:
 private:
     ClientData myClientData;
     TopicsData myTopicsData;
-    std::string configFilePath{"./../config.ini"};
+    std::string configFilePath{"./config.ini"};
 };
 
 #endif /* CONFIG__HHP_ */

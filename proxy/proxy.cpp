@@ -1,10 +1,11 @@
 #include <iostream>
 #include <math.h>
+#include <vector>
 #include "config.hpp"
 #include "mqtt/async_client.h"
 #include "proxy.hpp"
 
-Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(), config.getClientID(), config.getMaxBufMsgs(), nullptr)
+Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.getClientID(),config.getMaxBufMsgs(), nullptr)
 {
     /* get the names of topics in a local variable */
     topicsNames_t subTopicsNames = config.getSubTocpicsNames();
@@ -51,7 +52,7 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(), config.ge
                                                            << std::endl; });
 
     /* set the number of rpis */
-    this->numberOfRpis = config.getNumberOfRpis();
+    this->numberOfRpis =config.getNumberOfRpis();
 
     /* resize the messages data vectors */
     this->actionsMsgs.resize(this->numberOfRpis + 1);
@@ -63,8 +64,8 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(), config.ge
     /* create the topics of publishing and subscription */
     for (uint8_t i = 0; i < this->numberOfRpis + 1; i++)
     {
-        this->pubTopics.push_back({proxyClient, pubTopicsNames[i], qualityOfService, retainedFlag});
-        this->subTopics.push_back({proxyClient, subTopicsNames[i], qualityOfService, retainedFlag});
+        this->pubTopics.push_back({proxyClient, config.getPubTocpicsNames()[i], config.getQualityOfService(), config.getRetainedFlag()});
+        this->subTopics.push_back({proxyClient, config.getSubTocpicsNames()[i], config.getQualityOfService(), config.getRetainedFlag()});
     }
 
     /* create a connection options handler */
