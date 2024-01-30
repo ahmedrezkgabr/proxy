@@ -1,32 +1,24 @@
 #include <iostream>
 #include <math.h>
+#include <vector>
 #include "config.hpp"
 #include "mqtt/async_client.h"
 #include "proxy.hpp"
 
-Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(), config.getClientID(), config.getMaxBufMsgs(), nullptr)
+Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.getClientID(),config.getMaxBufMsgs(), nullptr)
 {
-    /* get the topics names */
-    topicsNames_t subTopicsNames = config.getSubTocpicsNames();
-    topicsNames_t pubTopicsNames = config.getSubTocpicsNames();
 
-    /* get the quality of service */
-    uint8_t qualityOfService = config.getQualityOfService();
-
-    /* get retained flag */
-    bool retainedFlag = config.getRetainedFlag();
-
+    
     /* set the call back of message arrival */
     this->proxyClient.set_message_callback([&](mqtt::const_message_ptr msg)
                                            {
                                             /* take the content of the message */
                                             std::string topic = msg->get_topic();
                                             std::string content = msg->to_string();
-                                            
-                                            /* which topic i received on */
-                                            for(uint8_t i = 0; i < this->numberOfRpis + 1; i++)
+
+                                            for(uint8_t i = 0; i < this->numberOfRpis + 1; i++)/* which topic i received on */
                                             {
-                                                if(topic == subTopicsNames[i])
+                                                if(topic == subTopics[i].get_name())
                                                 {
                                                     this->Rx |= (1 << i);                   /* set the corresponding bit */
                                                     if(!i){this->sensorsMsgs[i] = content;} /* cpy the content */
@@ -53,7 +45,7 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(), config.ge
                                                            << std::endl; });
 
     /* set the number of rpis */
-    this->numberOfRpis = config.getNumberOfRpis();
+    this->numberOfRpis =config.getNumberOfRpis();
 
     /* resize the messages data vectors */
     this->actionsMsgs.resize(this->numberOfRpis + 1);
@@ -65,8 +57,8 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(), config.ge
     /* create the topics of publishing and subscription */
     for (uint8_t i = 0; i < this->numberOfRpis + 1; i++)
     {
-        this->pubTopics.push_back({proxyClient, pubTopicsNames[i], qualityOfService, retainedFlag});
-        this->subTopics.push_back({proxyClient, subTopicsNames[i], qualityOfService, retainedFlag});
+        this->pubTopics.push_back({proxyClient, config.getPubTocpicsNames()[i], config.getQualityOfService(), config.getRetainedFlag()});
+        this->subTopics.push_back({proxyClient, config.getSubTocpicsNames()[i], config.getQualityOfService(), config.getRetainedFlag()});
     }
 
     /* create a connection options handler */

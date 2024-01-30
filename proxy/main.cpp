@@ -46,9 +46,11 @@ int main(int argc, char *argv[])
 
         while (true)
         {
+
             /* interface */
             if (myProxy.getRxFalg() == Proxy_Flag_t::CARLA) /* received from carla */
             {
+
                 /* parsing information */
                 myProxy.parse();
 
