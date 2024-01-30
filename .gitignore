@@ -3,3 +3,4 @@
 carla/build/
 rpi/build/
 proxy/build/
+proxy/unitTest/configTest/build/
