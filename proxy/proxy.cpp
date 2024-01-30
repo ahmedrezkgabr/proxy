@@ -1,6 +1,5 @@
 #include <iostream>
 #include <math.h>
-#include <vector>
 #include "config.hpp"
 #include "mqtt/async_client.h"
 #include "proxy.hpp"
@@ -13,6 +12,7 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(), config.ge
 
     /* get qos and retained flag in a local variable */
     uint8_t qualityOfService = config.getQualityOfService();
+
     bool retainedFlag = config.getRetainedFlag();
 
     /* set the call back of message arrival */
