@@ -7,8 +7,15 @@
 
 Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.getClientID(),config.getMaxBufMsgs(), nullptr)
 {
+    /* get the names of topics in a local variable */
+    topicsNames_t subTopicsNames = config.getSubTocpicsNames();
+    topicsNames_t pubTopicsNames = config.getPubTocpicsNames();
 
-    
+    /* get qos and retained flag in a local variable */
+    uint8_t qualityOfService = config.getQualityOfService();
+
+    bool retainedFlag = config.getRetainedFlag();
+
     /* set the call back of message arrival */
     this->proxyClient.set_message_callback([&](mqtt::const_message_ptr msg)
                                            {
@@ -18,7 +25,7 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.get
 
                                             for(uint8_t i = 0; i < this->numberOfRpis + 1; i++)/* which topic i received on */
                                             {
-                                                if(topic == subTopics[i].get_name())
+                                                if(topic == this->subTopics[i].get_name())
                                                 {
                                                     this->Rx |= (1 << i);                   /* set the corresponding bit */
                                                     if(!i){this->sensorsMsgs[i] = content;} /* cpy the content */
@@ -63,9 +70,9 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.get
 
     /* create a connection options handler */
     this->connectionOptions = mqtt::connect_options_builder()
-                                  .keep_alive_interval(std::chrono::seconds(const_cast<ConfigHandler &>(config).getKeepAliveTime()))
-                                  .clean_session(const_cast<ConfigHandler &>(config).getCleanSession())
-                                  .automatic_reconnect(const_cast<ConfigHandler &>(config).getAutoReconnect())
+                                  .keep_alive_interval(std::chrono::seconds(config.getKeepAliveTime()))
+                                  .clean_session(config.getCleanSession())
+                                  .automatic_reconnect(config.getAutoReconnect())
                                   .finalize();
 }
 
@@ -180,5 +187,11 @@ void Proxy::parse()
 /* not yet */
 void Proxy::compose()
 {
-    this->actionsMsgs[0] = this->actionsMsgs[1] + "," + this->actionsMsgs[2];
+    /* prepare the actions container to hold the new values */
+    this->actionsMsgs[0].clear();
+    for(uint8_t i = 1; i < this->numberOfRpis; ++i)
+    {
+        /* concatincate the actions received from the rpis */
+        this->actionsMsgs[0] += this->actionsMsgs[i];
+    }
 }
