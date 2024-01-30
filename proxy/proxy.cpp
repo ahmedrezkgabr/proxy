@@ -186,5 +186,11 @@ void Proxy::parse()
 /* not yet */
 void Proxy::compose()
 {
-    this->actionsMsgs[0] = this->actionsMsgs[1] + "," + this->actionsMsgs[2];
+    /* prepare the actions container to hold the new values */
+    this->actionsMsgs[0].clear();
+    for(uint8_t i = 1; i < this->numberOfRpis; ++i)
+    {
+        /* concatincate the actions received from the rpis */
+        this->actionsMsgs[0] += this->actionsMsgs[i];
+    }
 }
