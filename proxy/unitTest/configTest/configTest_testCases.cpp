@@ -1,23 +1,39 @@
-#include <gtest/gtest.h>
-#include "../../config.hpp"
+#include "configTest_testCases.hpp"
 
-TEST(CONFIG_TEST, getConfigFilePath_1)
+void configTest::SetUp()
 {
-    // arrange
-    ConfigHandler handler;
+}
+void configTest::TearDown()
+{
+}
+
+TEST_F(configTest, getConfigFilePath)
+{
     std::string path{"../../TestPath"};
     // actions
     handler.setConfigFilePath(path);
     // expect
+
     EXPECT_STREQ(path.c_str(), handler.getConfigFilePath().c_str());
 }
 
-TEST(CONFIG_TEST, getConfigFilePath_2)
-{ // arrange
-    ConfigHandler handler;
-    std::string path{"../../TestPath"};
+TEST_F(configTest, loadConfiguaration)
+{
+    std::string path{"./../../../config.ini"};
     // actions
     handler.setConfigFilePath(path);
     // expect
-    EXPECT_STREQ(path.c_str(), handler.getConfigFilePath().c_str());
+    EXPECT_EQ(Config_Error_t::OK, handler.loadConfiguaration());
+}
+
+TEST_F(configTest, getAddress)
+{
+    std::string address{"mqtt://localhost:1883"};
+    // actions
+    std::string path{"./../../../config.ini"};
+    // actions
+    handler.setConfigFilePath(path);
+    handler.loadConfiguaration();
+    // expect
+    EXPECT_STREQ(address.c_str(), handler.getAddress().c_str());
 }
