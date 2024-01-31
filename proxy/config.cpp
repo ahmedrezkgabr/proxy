@@ -3,12 +3,7 @@
 
 ConfigHandler::ConfigHandler(/* args */) {}
 
-ConfigHandler::~ConfigHandler()
-{
-    /* destroy the vectors */
-    this->myTopicsData.pubTopicsNames.~vector();
-    this->myTopicsData.subTopicsNames.~vector();
-}
+ConfigHandler::~ConfigHandler() {}
 
 /**
  * @brief Sets the configuration File Path.
