@@ -1,5 +1,6 @@
 #include <iostream>
 #include <math.h>
+#include <mutex>
 #include "config.hpp"
 #include "mqtt/async_client.h"
 #include "proxy.hpp"
@@ -22,13 +23,26 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(), config.ge
                                             std::string topic = msg->get_topic();
                                             std::string content = msg->to_string();
 
-                                            for(uint8_t i = 0; i < this->numberOfRpis + 1; i++)/* which topic i received on */
+                                            for (uint8_t i = 0; i < this->numberOfRpis + 1; i++)/* which topic i received on */
                                             {
-                                                if(topic == this->subTopics[i].get_name())
+                                                if (topic == this->subTopics[i].get_name())
                                                 {
+                                                    this->flagMutex.lock();
                                                     this->Rx |= (1 << i);                   /* set the corresponding bit */
-                                                    if(!i){this->sensorsMsgs[i] = content;} /* cpy the content */
-                                                    else{this->actionsMsgs[i] = content;}   /* cpy the content */
+                                                    this->flagMutex.unlock();
+
+                                                    if (!i)  /* cpy the content */
+                                                    {
+                                                        this->sensorsMutex.lock();
+                                                        this->sensorsMsgs[i] = content;
+                                                        this->sensorsMutex.unlock();
+                                                    }
+                                                    else    /* cpy the content */
+                                                    {
+                                                        this->actionsMutex.lock();
+                                                        this->actionsMsgs[i] = content;
+                                                        this->actionsMutex.unlock();
+                                                    }  
                                                 }
                                             } });
 
@@ -75,13 +89,7 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(), config.ge
                                   .finalize();
 }
 
-Proxy::~Proxy()
-{
-    this->actionsMsgs.~vector();
-    this->sensorsMsgs.~vector();
-    this->pubTopics.~vector();
-    this->subTopics.~vector();
-}
+Proxy::~Proxy() {}
 
 /**
  * @brief Connects to an MQTT server using the default options.
@@ -167,6 +175,7 @@ void Proxy::publish(Proxy_Flag_t type)
 
 void Proxy::clearRxFlag(Proxy_Flag_t type)
 {
+    this->flagMutex.lock();
     /* clear the corresponding bit of carla (bit-0) */
     if (type == Proxy_Flag_t::CARLA)
         this->Rx &= (~(1));
@@ -174,17 +183,22 @@ void Proxy::clearRxFlag(Proxy_Flag_t type)
     /* clear the corresponding bits of rpis bits[1:numberOfRpis] */
     else
         this->Rx &= (~(this->maskRx));
+    this->flagMutex.unlock();
 }
 
 /* not yet */
 void Proxy::parse()
 {
+    this->sensorsMutex.lock();
     this->sensorsMsgs[1] = this->sensorsMsgs[0];
-    this->sensorsMsgs[2] = this->sensorsMsgs[0];
+    // this->sensorsMsgs[2] = this->sensorsMsgs[0];
+    this->sensorsMutex.unlock();
 }
 
 /* not yet */
 void Proxy::compose()
 {
-    this->actionsMsgs[0] = this->actionsMsgs[1] + "," + this->actionsMsgs[2];
+    this->actionsMutex.lock();
+    this->actionsMsgs[0] = this->actionsMsgs[1];
+    this->actionsMutex.unlock();
 }
