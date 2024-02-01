@@ -1,11 +1,11 @@
 #include <iostream>
 #include <math.h>
-#include <vector>
+#include <mutex>
 #include "config.hpp"
 #include "mqtt/async_client.h"
 #include "proxy.hpp"
 
-Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.getClientID(),config.getMaxBufMsgs(), nullptr)
+Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(), config.getClientID(), config.getMaxBufMsgs(), nullptr)
 {
     /* get the names of topics in a local variable */
     topicsNames_t subTopicsNames = config.getSubTocpicsNames();
@@ -23,13 +23,26 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.get
                                             std::string topic = msg->get_topic();
                                             std::string content = msg->to_string();
 
-                                            for(uint8_t i = 0; i < this->numberOfRpis + 1; i++)/* which topic i received on */
+                                            for (uint8_t i = 0; i < this->numberOfRpis + 1; i++)/* which topic i received on */
                                             {
-                                                if(topic == this->subTopics[i].get_name())
+                                                if (topic == this->subTopics[i].get_name())
                                                 {
+                                                    this->flagMutex.lock();
                                                     this->Rx |= (1 << i);                   /* set the corresponding bit */
-                                                    if(!i){this->sensorsMsgs[i] = content;} /* cpy the content */
-                                                    else{this->actionsMsgs[i] = content;}   /* cpy the content */
+                                                    this->flagMutex.unlock();
+
+                                                    if (!i)  /* cpy the content */
+                                                    {
+                                                        this->sensorsMutex.lock();
+                                                        this->sensorsMsgs[i] = content;
+                                                        this->sensorsMutex.unlock();
+                                                    }
+                                                    else    /* cpy the content */
+                                                    {
+                                                        this->actionsMutex.lock();
+                                                        this->actionsMsgs[i] = content;
+                                                        this->actionsMutex.unlock();
+                                                    }  
                                                 }
                                             } });
 
@@ -52,7 +65,7 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.get
                                                            << std::endl; });
 
     /* set the number of rpis */
-    this->numberOfRpis =config.getNumberOfRpis();
+    this->numberOfRpis = config.getNumberOfRpis();
 
     /* resize the messages data vectors */
     this->actionsMsgs.resize(this->numberOfRpis + 1);
@@ -64,8 +77,8 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.get
     /* create the topics of publishing and subscription */
     for (uint8_t i = 0; i < this->numberOfRpis + 1; i++)
     {
-        this->pubTopics.push_back({proxyClient, config.getPubTocpicsNames()[i], config.getQualityOfService(), config.getRetainedFlag()});
-        this->subTopics.push_back({proxyClient, config.getSubTocpicsNames()[i], config.getQualityOfService(), config.getRetainedFlag()});
+        this->pubTopics.push_back({proxyClient, pubTopicsNames[i], qualityOfService, retainedFlag});
+        this->subTopics.push_back({proxyClient, subTopicsNames[i], qualityOfService, retainedFlag});
     }
 
     /* create a connection options handler */
@@ -76,13 +89,7 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(),config.get
                                   .finalize();
 }
 
-Proxy::~Proxy()
-{
-    this->actionsMsgs.~vector();
-    this->sensorsMsgs.~vector();
-    this->pubTopics.~vector();
-    this->subTopics.~vector();
-}
+Proxy::~Proxy() {}
 
 /**
  * @brief Connects to an MQTT server using the default options.
@@ -168,6 +175,7 @@ void Proxy::publish(Proxy_Flag_t type)
 
 void Proxy::clearRxFlag(Proxy_Flag_t type)
 {
+    this->flagMutex.lock();
     /* clear the corresponding bit of carla (bit-0) */
     if (type == Proxy_Flag_t::CARLA)
         this->Rx &= (~(1));
@@ -175,23 +183,22 @@ void Proxy::clearRxFlag(Proxy_Flag_t type)
     /* clear the corresponding bits of rpis bits[1:numberOfRpis] */
     else
         this->Rx &= (~(this->maskRx));
+    this->flagMutex.unlock();
 }
 
 /* not yet */
 void Proxy::parse()
 {
+    this->sensorsMutex.lock();
     this->sensorsMsgs[1] = this->sensorsMsgs[0];
-    this->sensorsMsgs[2] = this->sensorsMsgs[0];
+    // this->sensorsMsgs[2] = this->sensorsMsgs[0];
+    this->sensorsMutex.unlock();
 }
 
 /* not yet */
 void Proxy::compose()
 {
-    /* prepare the actions container to hold the new values */
-    this->actionsMsgs[0].clear();
-    for(uint8_t i = 1; i < this->numberOfRpis; ++i)
-    {
-        /* concatincate the actions received from the rpis */
-        this->actionsMsgs[0] += this->actionsMsgs[i];
-    }
+    this->actionsMutex.lock();
+    this->actionsMsgs[0] = this->actionsMsgs[1];
+    this->actionsMutex.unlock();
 }

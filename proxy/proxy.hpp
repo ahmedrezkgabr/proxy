@@ -19,8 +19,7 @@ enum class Proxy_Flag_t
 
 class Proxy
 {
-
-    public:
+public:
     /**
      * @brief Create a Proxy that can be used to communicate with an MQTT server.
      * @throw exception if an argument is invalid
@@ -77,8 +76,8 @@ class Proxy
     void compose();
 
     void clearRxFlag(Proxy_Flag_t type);
-    
-    private:
+
+private:
     /* mqtt stuff */
     mqtt::async_client proxyClient;
     std::vector<mqtt::topic> pubTopics;
@@ -92,6 +91,9 @@ class Proxy
     uint64_t Rx{0};
     uint64_t maskRx{0};
     uint8_t numberOfRpis{0};
+    std::mutex flagMutex;
+    std::mutex sensorsMutex;
+    std::mutex actionsMutex;
 };
 
 #endif /* PROXY__HPP_ */
