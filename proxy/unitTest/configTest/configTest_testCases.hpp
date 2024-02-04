@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../../config.hpp"
+#include "config.hpp"
 class configTest : public testing::Test
 {
 public:

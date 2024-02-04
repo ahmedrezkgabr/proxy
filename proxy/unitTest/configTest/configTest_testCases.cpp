@@ -1,5 +1,5 @@
 #include "configTest_testCases.hpp"
-#include "../../config.hpp"
+#include "config.hpp"
 #include <gmock/gmock-matchers.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -8,7 +8,7 @@ using namespace ::testing;
 
 void configTest::SetUp()
 {
-    handler.setConfigFilePath("./../../../config.ini");
+    handler.setConfigFilePath("../config.ini");
     handler.loadConfiguaration();
 }
 void configTest::TearDown() {}
@@ -33,7 +33,7 @@ TEST_F(configTest, getMaxBufMsgs_1)
 
 TEST_F(configTest, getMaxBufMsgs_2)
 {
-    int MaxBufMsgs{120};
+    int MaxBufMsgs{1000};
     EXPECT_EQ(MaxBufMsgs, handler.getMaxBufMsgs());
 }
 
@@ -49,14 +49,14 @@ TEST_F(configTest, getAutoReconnect)
 
 TEST_F(configTest, getKeepAliveTime_1)
 {
-    int MaxBufMsgs{120};
-    EXPECT_NE(MaxBufMsgs, handler.getKeepAliveTime());
+    int aliveTime{120};
+    EXPECT_NE(aliveTime, handler.getKeepAliveTime());
 }
 
 TEST_F(configTest, getKeepAliveTime_2)
 {
-    int MaxBufMsgs{600};
-    EXPECT_EQ(MaxBufMsgs, handler.getKeepAliveTime());
+    int aliveTime{600};
+    EXPECT_EQ(aliveTime, handler.getKeepAliveTime());
 }
 
 TEST_F(configTest, getPubTocpicsNames)
