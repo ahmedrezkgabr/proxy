@@ -1,0 +1,96 @@
+[==========] Running 17 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 17 tests from configTest
+[ RUN      ] configTest.getAddress
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getAddress (0 ms)
+[ RUN      ] configTest.getClientID
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getClientID (0 ms)
+[ RUN      ] configTest.getMaxBufMsgs_1
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getMaxBufMsgs_1 (0 ms)
+[ RUN      ] configTest.getMaxBufMsgs_2
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getMaxBufMsgs_2 (0 ms)
+[ RUN      ] configTest.getCleanSession
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getCleanSession (0 ms)
+[ RUN      ] configTest.getAutoReconnect
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getAutoReconnect (0 ms)
+[ RUN      ] configTest.getKeepAliveTime_1
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getKeepAliveTime_1 (0 ms)
+[ RUN      ] configTest.getKeepAliveTime_2
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getKeepAliveTime_2 (0 ms)
+[ RUN      ] configTest.getPubTocpicsNames
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getPubTocpicsNames (0 ms)
+[ RUN      ] configTest.getPubTocpicsNames_2
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getPubTocpicsNames_2 (0 ms)
+[ RUN      ] configTest.getSubTocpicsNames_1
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getSubTocpicsNames_1 (0 ms)
+[ RUN      ] configTest.getSubTocpicsNames_2
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getSubTocpicsNames_2 (0 ms)
+[ RUN      ] configTest.getNumberOfRpis_1
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getNumberOfRpis_1 (0 ms)
+[ RUN      ] configTest.getNumberOfRpis_2
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getNumberOfRpis_2 (0 ms)
+[ RUN      ] configTest.getQualityOfService_1
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getQualityOfService_1 (0 ms)
+[ RUN      ] configTest.getQualityOfService_2
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getQualityOfService_2 (0 ms)
+[ RUN      ] configTest.getRetainedFlag_2
+unknown file: Failure
+C++ exception with description "../config.ini: cannot open file" thrown in SetUp().
+[  FAILED  ] configTest.getRetainedFlag_2 (0 ms)
+[----------] 17 tests from configTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 17 tests from 1 test suite ran. (0 ms total)
+[  PASSED  ] 0 tests.
+[  FAILED  ] 17 tests, listed below:
+[  FAILED  ] configTest.getAddress
+[  FAILED  ] configTest.getClientID
+[  FAILED  ] configTest.getMaxBufMsgs_1
+[  FAILED  ] configTest.getMaxBufMsgs_2
+[  FAILED  ] configTest.getCleanSession
+[  FAILED  ] configTest.getAutoReconnect
+[  FAILED  ] configTest.getKeepAliveTime_1
+[  FAILED  ] configTest.getKeepAliveTime_2
+[  FAILED  ] configTest.getPubTocpicsNames
+[  FAILED  ] configTest.getPubTocpicsNames_2
+[  FAILED  ] configTest.getSubTocpicsNames_1
+[  FAILED  ] configTest.getSubTocpicsNames_2
+[  FAILED  ] configTest.getNumberOfRpis_1
+[  FAILED  ] configTest.getNumberOfRpis_2
+[  FAILED  ] configTest.getQualityOfService_1
+[  FAILED  ] configTest.getQualityOfService_2
+[  FAILED  ] configTest.getRetainedFlag_2
+
+17 FAILED TESTS

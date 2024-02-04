@@ -1,0 +1,12 @@
+[==========] Running 2 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 2 tests from ProxyTest
+[ RUN      ] ProxyTest.Proxy_Flag
+[       OK ] ProxyTest.Proxy_Flag (0 ms)
+[ RUN      ] ProxyTest.get_server_uri
+[       OK ] ProxyTest.get_server_uri (0 ms)
+[----------] 2 tests from ProxyTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 2 tests from 1 test suite ran. (1 ms total)
+[  PASSED  ] 2 tests.
