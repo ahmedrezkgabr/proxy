@@ -1,0 +1,45 @@
+name: C++ CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y libssl-dev cmake
+
+    - name: Build Paho library
+      run: cmake -Bbuild -H. && cmake --build build
+      working-directory: path/to/paho-library
+
+    - name: Build main code
+      run: |
+        mkdir -p build
+        cd build
+        cmake ..
+        make
+      working-directory: ../../proxy
+
+    - name: Run unit tests of config module
+      run: |
+        mkdir -p build
+        cd build
+        cmake ..
+        make test
+      working-directory: ../../proxy/unitTest/configTest
+
+    - name: Run unit tests of proxy module
+      run: |
+        mkdir -p build
+        cd build
+        cmake ..
+        make test
+      working-directory: ../../proxy/unitTest/proxyTest
