@@ -16,10 +16,14 @@ jobs:
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y libssl-dev cmake
 
-    - name: Build Paho library
-      run: cmake -Bbuild -H. && cmake --build build
-      working-directory: path/to/paho-library
-
+    - name: Fetch and build Paho library
+      run: |
+        git clone https://github.com/eclipse/paho.mqtt.c.git
+        cd paho.mqtt.c
+        cmake -Bbuild -H. -DPAHO_WITH_SSL=ON
+        cmake --build build
+      working-directory: path/to/parent-directory-of-paho-library
+    
     - name: Build main code
       run: |
         mkdir -p build
