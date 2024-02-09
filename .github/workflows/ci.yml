@@ -30,3 +30,10 @@ jobs:
         cd build
         g++ ../config.cpp ../configTest_main.cpp ../configTest_testCases.cpp -o configTest -lgtest -lgtest_main -lgmock -pthread
       working-directory: proxy/unitTest/configTest
+
+    - name: Run unit tests of proxy module
+      run: |
+        mkdir -p build
+        cd build
+        g++ ../proxy.cpp ../proxyest_main.cpp ../proxyTest_testCases.cpp -o configTest -lgtest -lgtest_main -lgmock -pthread -lpaho-mqttpp3 -lpaho-mqtt3a
+      working-directory: proxy/unitTest/configTest
