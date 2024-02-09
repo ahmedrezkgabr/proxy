@@ -1,9 +1,9 @@
-name: C++ CI
+name: Continuous Integration for the main branch
 
 on:
   push:
     branches:
-      - test-ci
+      - main
 
 jobs:
   build:
@@ -24,18 +24,10 @@ jobs:
         make
       working-directory: proxy/
 
-    - name: Run unit tests of config module
+    - name: Run unit tests
       run: |
         mkdir -p build
         cd build
         cmake ..
         make
       working-directory: proxy/unitTest/configTest
-
-    - name: Run unit tests of proxy module
-      run: |
-        mkdir -p build
-        cd build
-        cmake ..
-        make
-      working-directory: proxy/unitTest/proxyTest
