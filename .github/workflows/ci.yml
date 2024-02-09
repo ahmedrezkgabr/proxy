@@ -24,10 +24,9 @@ jobs:
         make
       working-directory: proxy/
 
-    # - name: Run unit tests
-    #   run: |
-    #     mkdir -p build
-    #     cd build
-    #     cmake ..
-    #     make
-    #   working-directory: proxy/unitTest/configTest
+    - name: Run unit tests of config module
+      run: |
+        mkdir -p build
+        cd build
+        g++ ../config.cpp ../configTest_main.cpp ../configTest_testCases.cpp -o configTest -lgtest -lgtest_main -lgmock -pthread
+      working-directory: proxy/unitTest/configTest
