@@ -8,7 +8,7 @@ using namespace ::testing;
 
 void configTest::SetUp()
 {
-    handler.setConfigFilePath("../config.ini");
+    handler.setConfigFilePath("config.ini");
     handler.loadConfiguaration();
 }
 void configTest::TearDown() {}
