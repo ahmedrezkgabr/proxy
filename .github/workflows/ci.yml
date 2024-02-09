@@ -22,7 +22,7 @@ jobs:
         cd paho.mqtt.c
         cmake -Bbuild -H. -DPAHO_WITH_SSL=ON
         cmake --build build
-      working-directory: path/to/parent-directory-of-paho-library
+      working-directory: ../../proxy
     
     - name: Build main code
       run: |
