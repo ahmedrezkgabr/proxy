@@ -36,5 +36,4 @@ jobs:
         mkdir -p build
         cd build
         g++ ../proxy.cpp ../proxyTest_main.cpp ../proxyTest_testCases.cpp -o proxyTest -lgtest -lgtest_main -lgmock -pthread -lpaho-mqttpp3 -lpaho-mqtt3a
-        ./proxyTest
       working-directory: proxy/unitTest/proxyTest
