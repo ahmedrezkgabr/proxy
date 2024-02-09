@@ -22,7 +22,7 @@ jobs:
         cd build
         cmake ..
         make
-      working-directory: ./../../proxy
+      working-directory: ./../../proxy/proxy
 
     - name: Run unit tests of config module
       run: |
