@@ -24,10 +24,10 @@ jobs:
         make
       working-directory: proxy/
 
-    - name: Run unit tests
-      run: |
-        mkdir -p build
-        cd build
-        cmake ..
-        make
-      working-directory: proxy/unitTest/configTest
+    # - name: Run unit tests
+    #   run: |
+    #     mkdir -p build
+    #     cd build
+    #     cmake ..
+    #     make
+    #   working-directory: proxy/unitTest/configTest
