@@ -22,7 +22,7 @@ jobs:
         cd build
         cmake ..
         make
-      working-directory: ../../proxy
+      working-directory: ./../../proxy
 
     - name: Run unit tests of config module
       run: |
@@ -30,7 +30,7 @@ jobs:
         cd build
         cmake ..
         make test
-      working-directory: ../../proxy/unitTest/configTest
+      working-directory: ./../../proxy/unitTest/configTest
 
     - name: Run unit tests of proxy module
       run: |
@@ -38,4 +38,4 @@ jobs:
         cd build
         cmake ..
         make test
-      working-directory: ../../proxy/unitTest/proxyTest
+      working-directory: ./../../proxy/unitTest/proxyTest
