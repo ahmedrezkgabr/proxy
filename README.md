@@ -22,17 +22,107 @@ Enables real-time interaction between the simulated and physical components, all
 
 This proxy communicate over ```MQTT``` protocol, and uses ```Paho-mqtt``` library to establish a client to the proxy.
 
-## Directories
+---
+---
 
-### 1. `proxy/`
+## Dependancies
 
-- This is the main part of the repo.
-- This code is containing the files of `CMakeLists.txt`, `config.cpp`, `config.hpp`, `config.ini`, `proxy.cpp`, `proxy.hpp`, and `main.cpp`.
-- `CMakeLists.txt` to build the code.
-- `config.cpp`, `config.hpp`, `config.ini` to configure the parameters.
-- in `config.ini` you can specify the number of targets, AKA `raspberrypi`, and other things related to the network.
-- `proxy.cpp`, `proxy.hpp` provide the heart of the system and how it deals with `MQTT` network.
-- `main.cpp` provides the main logic of the system.
+`libssl-dev`, `cmake`, `libboost-all-dev`, `libpaho-mqtt*`, `libgtest-dev`, and `libgmock-dev`.
+
+## usage
+
+### clone the repo
+
+```bash
+git clone https://github.com/ahmedrezkgabr/proxy.git
+
+cd proxy
+```
+
+### configure the proxy
+
+- these configuration are in `./proxy/config.ini` file.
+
+### build the proxy
+
+```bash
+cd proxy
+mkdir build
+cd build
+
+cmake ..
+make
+```
+
+- you get an executable file called `proxy`.
+
+### run the proxy
+
+```bash
+./proxy
+```
+
+- you can pass another configuration file as an argument to the proxy
+
+```bash
+./proxy <path to the configuration file>
+```
+
+---
+---
+
+## Source Code
+
+### `proxy/`
+
+```txt
+.
+├── CMakeLists.txt
+├── config.cpp
+├── config.hpp
+├── config.ini
+├── main.cpp
+├── proxy.cpp
+├── proxy.hpp
+└── unitTest
+    ├── configTest
+    └── proxyTest
+
+```
+
+- the system consists of two main modules `config` and `proxy`.
+
+#### `config`
+
+- the config module is responsible for dynamic configuration of the system.
+- these configurations are:
+
+```txt
+these configuration are mqtt-client-configurations
+and the topics which the proxy-client is dealing with
+```
+
+`address`, `clientId`, `maxBufMsgs`, `cleanSession`, `autoReconnect`, `keepAliveTime`,`qualityOfService`, `retainedFlag`, `numberOfRpis`, `carlaSensorsTopic`, `carlaActionsTopic`,  `rpi01SensorsTopic`, `rpi01ActionsTopic`, ... `rpixxSensorsTopic`, `rpixxActionsTopic`.
+
+- xx in the topic name is depending on the `numberOfRpis` preperity
+
+---
+
+#### `proxy`
+
+this code provide the main functionality of the proxy-mqtt-client that is responsible to establish the network between the `caral` world and the `rpi` worlds.
+
+---
+
+## Testing
+
+### unit testing
+
+- each module has its own testing directory
+
+### integration testing
+
+- carla/ and rpi/ are mock applications for the integration testing
 
 ### 2. `carla/`
 
