@@ -59,14 +59,14 @@ Config_Error_t ConfigHandler::loadConfiguaration(void)
     this->myTopicsData.numberOfRpis = configTree.get<uint8_t>("topics.numberOfRpis");
 
     /* get carla's topics */
-    this->myTopicsData.pubTopicsNames.push_back(configTree.get<std::string>("topics.carlaActionsTopic"));
-    this->myTopicsData.subTopicsNames.push_back(configTree.get<std::string>("topics.carlaSensorsTopic"));
+    this->myTopicsData.pubTopicsNames.push_back(configTree.get<std::string>("topics.simActionsTopic"));
+    this->myTopicsData.subTopicsNames.push_back(configTree.get<std::string>("topics.simSensorsTopic"));
 
     /* loop to get rpix topics : x = [1:numberOfRpis] */
     for (uint8_t i = 0; i < this->myTopicsData.numberOfRpis; i++)
     {
-        this->myTopicsData.pubTopicsNames.push_back(configTree.get<std::string>("topics.rpi0" + std::to_string(i + 1) + "SensorsTopic"));
-        this->myTopicsData.subTopicsNames.push_back(configTree.get<std::string>("topics.rpi0" + std::to_string(i + 1) + "ActionsTopic"));
+        this->myTopicsData.pubTopicsNames.push_back(configTree.get<std::string>("topics.trgt0" + std::to_string(i + 1) + "SensorsTopic"));
+        this->myTopicsData.subTopicsNames.push_back(configTree.get<std::string>("topics.trgt0" + std::to_string(i + 1) + "ActionsTopic"));
     }
 
     return Config_Error_t::OK;
