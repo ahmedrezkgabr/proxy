@@ -186,12 +186,52 @@ void Proxy::clearRxFlag(Proxy_Flag_t type)
     this->flagMutex.unlock();
 }
 
-/* not yet */
 void Proxy::parse()
 {
     this->sensorsMutex.lock();
-    this->sensorsMsgs[1] = this->sensorsMsgs[0];
-    // this->sensorsMsgs[2] = this->sensorsMsgs[0];
+    /* split the string at index 0 into n strings each in index i (i = 1 : n - 1) */
+    if (this->sensorsMsgs.empty() || this->sensorsMsgs[0].empty())
+    {
+        std::cerr << "Error: sensorsMsgs is empty or the 0th element is empty." << std::endl;
+        return;
+    }
+
+    // Split the 0th element by commas
+    std::vector<std::string> values = split(this->sensorsMsgs[0], ',');
+
+    // Ensure there are enough elements to process
+    size_t numValues = values.size();
+    if (numValues == 0)
+    {
+        std::cerr << "Error: No values found in the 0th element of sensorsMsgs." << std::endl;
+        return;
+    }
+
+    // Calculate the number of elements needed in the sensorsMsgs to hold all values
+    size_t requiredElements = (numValues + 6) / 7;
+
+    // Resize the sensorsMsgs vector if necessary
+    if (this->sensorsMsgs.size() < requiredElements + 1)
+    {
+        this->sensorsMsgs.resize(requiredElements + 1);
+    }
+
+    // Fill subsequent elements of the sensorsMsgs vector with values
+    size_t index = 0;
+    for (size_t i = 1; i <= requiredElements; ++i)
+    {
+        std::ostringstream oss;
+        for (size_t j = 0; j < 7 && index < numValues; ++j, ++index)
+        {
+            if (j > 0)
+            {
+                oss << ",";
+            }
+            oss << values[index];
+        }
+        this->sensorsMsgs[i] = oss.str();
+    }
+
     this->sensorsMutex.unlock();
 }
 
@@ -199,6 +239,34 @@ void Proxy::parse()
 void Proxy::compose()
 {
     this->actionsMutex.lock();
-    this->actionsMsgs[0] = this->actionsMsgs[1];
+    std::vector<std::string> composedVector(this->actionsMsgs.begin() + 1, this->actionsMsgs.end());
+    this->actionsMsgs[0] = join(composedVector, ",");
+
     this->actionsMutex.unlock();
+}
+
+std::vector<std::string> Proxy::split(const std::string &str, char delimiter)
+{
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(str);
+    while (std::getline(tokenStream, token, delimiter))
+    {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+std::string Proxy::join(const std::vector<std::string> &vec, const std::string &delimiter)
+{
+    std::ostringstream oss;
+    for (size_t i = 0; i < vec.size(); ++i)
+    {
+        if (i > 0)
+        {
+            oss << delimiter;
+        }
+        oss << vec[i];
+    }
+    return oss.str();
 }
