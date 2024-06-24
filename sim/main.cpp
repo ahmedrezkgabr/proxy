@@ -13,17 +13,17 @@
 #include <ctime>
 #include "mqtt/async_client.h"
 #include "filehandling.hpp"
-#include "carla.hpp"
+#include "sim.hpp"
 
 const std::string DFLT_ADDRESS{"mqtt://localhost:1883"};
-const std::string CLIENT_ID{"carla"};
-const std::string TOPIC_TO_PUB{"carla/sensors"};
-const std::string TOPIC_TO_SUB{"carla/actions"};
+const std::string CLIENT_ID{"sim"};
+const std::string TOPIC_TO_PUB{"sim/sensors"};
+const std::string TOPIC_TO_SUB{"sim/actions"};
 
 const int QOS{1};
 
-const std::string INPUT_FILE_PATH{"../../.logs/carla/sensors.csv"};
-const std::string OUTPUT_FILE_PATH{"../../.logs/carla//actions.csv"};
+const std::string INPUT_FILE_PATH{"../../.logs/sim/sensors.csv"};
+const std::string OUTPUT_FILE_PATH{"../../.logs/sim//actions.csv"};
 
 const auto PERIOD = std::chrono::seconds(5);
 const int MAX_BUFFERED_MSGS = 120; // 120 * 5sec => 10min off-line buffering

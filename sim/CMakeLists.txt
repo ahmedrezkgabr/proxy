@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(carla)
+project(sim)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -10,12 +10,12 @@ find_package(PahoMqttCpp REQUIRED)
 # Add your source files
 set(SOURCE_FILES
   main.cpp
-  carla.cpp
+  sim.cpp
   filehandling.cpp 
     )
 
 # Create an executable
-add_executable(carla ${SOURCE_FILES})
+add_executable(sim ${SOURCE_FILES})
 
 # Link against the Paho MQTT C++ library
-target_link_libraries(carla PahoMqttCpp::paho-mqttpp3)
+target_link_libraries(sim PahoMqttCpp::paho-mqttpp3)
