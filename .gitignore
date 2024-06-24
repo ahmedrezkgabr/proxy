@@ -1,7 +1,7 @@
 .logs/
 .vscode/
-carla/build/
-rpi/build/
+sim/build/
+sim/build/
 proxy/build/
 proxy/unitTest/configTest/build/
 proxy/unitTest/proxyTest/build/
