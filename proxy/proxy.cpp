@@ -209,10 +209,10 @@ void Proxy::parse()
         return;
     }
 
-    // Split the 0th element by commas
+    /* Split the 0th element by commas */
     std::vector<std::string> values = split(this->sensorsMsgs[0], ',');
 
-    // Ensure there are enough elements to process
+    /* Ensure there are enough elements to process */
     size_t numValues = values.size();
     if (numValues == 0)
     {
@@ -220,16 +220,16 @@ void Proxy::parse()
         return;
     }
 
-    // Calculate the number of elements needed in the sensorsMsgs to hold all values
+    /* Calculate the number of elements needed in the sensorsMsgs to hold all values */
     size_t requiredElements = (numValues + 6) / 7;
 
-    // Resize the sensorsMsgs vector if necessary
+    /* Resize the sensorsMsgs vector if necessary */
     if (this->sensorsMsgs.size() < requiredElements + 1)
     {
         this->sensorsMsgs.resize(requiredElements + 1);
     }
 
-    // Fill subsequent elements of the sensorsMsgs vector with values
+    /* Fill subsequent elements of the sensorsMsgs vector with values */
     size_t index = 0;
     for (size_t i = 1; i <= requiredElements; ++i)
     {
@@ -248,16 +248,17 @@ void Proxy::parse()
     this->sensorsMutex.unlock();
 }
 
-/* not yet */
 void Proxy::compose()
 {
     this->actionsMutex.lock();
+    this->actionsMsgs[0] = "";
     for (size_t i = 0; i < this->numberOfRpis; i++)
     {
         this->actionsMsgs[0] += this->actionsMsgs[i + 1];
-        this->actionsMsgs[0] +=",";
+        if (i < this->numberOfRpis - 1)
+            this->actionsMsgs[0] += ",";
     }
-    
+
     this->actionsMutex.unlock();
 }
 
