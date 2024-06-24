@@ -1,7 +1,7 @@
 .logs/
 .vscode/
 sim/build/
-sim/build/
+trgt/build/
 proxy/build/
 proxy/unitTest/configTest/build/
 proxy/unitTest/proxyTest/build/
