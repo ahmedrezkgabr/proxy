@@ -252,9 +252,12 @@ void Proxy::parse()
 void Proxy::compose()
 {
     this->actionsMutex.lock();
-    std::vector<std::string> composedVector(this->actionsMsgs.begin() + 1, this->actionsMsgs.end());
-    this->actionsMsgs[0] = join(composedVector, ",");
-
+    for (size_t i = 0; i < this->numberOfRpis; i++)
+    {
+        this->actionsMsgs[0] += this->actionsMsgs[i + 1];
+        this->actionsMsgs[0] +=",";
+    }
+    
     this->actionsMutex.unlock();
 }
 
@@ -268,18 +271,4 @@ std::vector<std::string> Proxy::split(const std::string &str, char delimiter)
         tokens.push_back(token);
     }
     return tokens;
-}
-
-std::string Proxy::join(const std::vector<std::string> &vec, const std::string &delimiter)
-{
-    std::ostringstream oss;
-    for (size_t i = 0; i < vec.size(); ++i)
-    {
-        if (i > 0)
-        {
-            oss << delimiter;
-        }
-        oss << vec[i];
-    }
-    return oss.str();
 }
