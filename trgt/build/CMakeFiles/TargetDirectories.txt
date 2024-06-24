@@ -1,3 +1,0 @@
-/home/rezk/disktop/proxy/rpi/build/CMakeFiles/trgt.dir
-/home/rezk/disktop/proxy/rpi/build/CMakeFiles/edit_cache.dir
-/home/rezk/disktop/proxy/rpi/build/CMakeFiles/rebuild_cache.dir

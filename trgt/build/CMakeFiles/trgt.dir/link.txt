@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/trgt.dir/main.cpp.o CMakeFiles/trgt.dir/trgt.cpp.o CMakeFiles/trgt.dir/filehandling.cpp.o -o trgt  -Wl,-rpath,/usr/local/lib /usr/lib/x86_64-linux-gnu/libpaho-mqttpp3.so.1.2.0 /usr/local/lib/libpaho-mqtt3as.so /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/x86_64-linux-gnu/libcrypto.so 
