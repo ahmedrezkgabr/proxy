@@ -1,82 +1,50 @@
-# Proxy
+# Proxy Software Component
 
-## Abstract
+## Overview
 
-Welcome to the Proxy Subsystem of the Truck Platooning Graduation Project! This subsystem serves as a crucial intermediate layer, facilitating seamless communication between the simulation world and the real world components of the Truck Platooning system.
+This repository contains the source code for the "proxy" software component, a crucial part of the graduation project "Vehicle Platooning with V2V using Embedded Linux". The main objective of this project is to implement a truck platooning system, which involves realistic simulations and embedded Linux target units to represent the brains of vehicles responsible for communication and control algorithms.
 
-## Key Features
+## Project Components
 
-### 1. `Communication Middleware`
+The system consists of:
 
-The Proxy Subsystem incorporates a robust communication middleware to efficiently transfer messages between the simulation world and real-world components.
+- **Simulation Environment (CARLA)**: Provides a realistic environment for testing the system.
+- **Embedded Linux Target Units**: Each unit represents a vehicle's brain, handling communication and control algorithms.
 
-### 2. `Message Translation`
+## Problem and Solution
 
-It is responsible for translating messages between the different formats used in the simulation and physical systems, ensuring seamless interoperability.
+The project faced a challenge with unsynchronized data exchange between the simulation environment and the target units. The proxy component was introduced to address this issue by synchronizing data transmission and reception between the simulation environment (CARLA) and the embedded Linux target units.
 
-### 3. `Real-time Interaction`
+## Proxy Component
 
-Enables real-time interaction between the simulated and physical components, allowing for dynamic adjustments and responsiveness within the Truck Platooning system.
+The proxy component's primary role is to:
 
-### 4. `MQTT broker`
+1. **Receive Sensor Messages**: Collect sensor data from the CARLA simulation environment.
+2. **Parse and Route Messages**: Parse the sensor data and route the parsed messages to the corresponding target embedded Linux units.
+3. **Synchronize Actions**: Receive control signals from the target units, compose them into a single message, and send it back to CARLA to synchronize the arrival of actions.
 
-This proxy communicate over ```MQTT``` protocol, and uses ```Paho-mqtt``` library to establish a client to the proxy.
+## Communication Protocol
 
----
----
+The communication between the simulation environment, proxy, and target units is based on the MQTT protocol using Mosquitto broker and Paho clients.
 
-## Dependancies
+## Repository Structure
 
-`libssl-dev`, `cmake`, `libboost-all-dev`, `libpaho-mqtt*`, `libgtest-dev`, and `libgmock-dev`.
-
-## usage
-
-### clone the repo
-
-```bash
-git clone https://github.com/ahmedrezkgabr/proxy.git
-
-cd proxy
+``` bash
+├── proxy
+│   └── unitTest
+│       ├── configTest
+│       │   └── coverageReports
+│       └── proxyTest
+│           └── coverageReports
+├── sim
+├── trgt
+├── .git
+└── .github
+    └── workflows
 ```
 
-### configure the proxy
-
-- these configuration are in `./proxy/config.ini` file.
-
-### build the proxy
-
-```bash
-cd proxy
-mkdir build
-cd build
-
-cmake ..
-make
-```
-
-- you get an executable file called `proxy`.
-
-### run the proxy
-
-```bash
-./proxy
-```
-
-- you can pass another configuration file as an argument to the proxy
-
-```bash
-./proxy <path to the configuration file>
-```
-
----
----
-
-## Source Code
-
-### `proxy/`
-
-```txt
-.
+``` bash
+proxy
 ├── CMakeLists.txt
 ├── config.cpp
 ├── config.hpp
@@ -86,212 +54,171 @@ make
 ├── proxy.hpp
 └── unitTest
     ├── configTest
+    │   ├── ...
+    │   ├── ...
+    │   └── coverageReports
+    │       ├── ...
+    │       └── ...
     └── proxyTest
-
+        ├── ...
+        ├── ...
+        └── coverageReports
+            ├── ...
+            └── ...        
 ```
 
-- the system consists of two main modules `config` and `proxy`.
+``` bash
+trgt
+├── CMakeLists.txt
+├── filehandling.cpp
+├── filehandling.hpp
+├── main.cpp
+├── trgt.cpp
+└── trgt.hpp
 
-#### `config`
-
-- the config module is responsible for dynamic configuration of the system.
-- these configurations are:
-
-```txt
-these configuration are mqtt-client-configurations
-and the topics which the proxy-client is dealing with
+sim
+├── CMakeLists.txt
+├── filehandling.cpp
+├── filehandling.hpp
+├── main.cpp
+├── sim.cpp
+└── sim.hpp
 ```
 
-`address`, `clientId`, `maxBufMsgs`, `cleanSession`, `autoReconnect`, `keepAliveTime`,`qualityOfService`, `retainedFlag`, `numberOfRpis`, `carlaSensorsTopic`, `carlaActionsTopic`,  `rpi01SensorsTopic`, `rpi01ActionsTopic`, ... `rpixxSensorsTopic`, `rpixxActionsTopic`.
+### Directories Description
 
-- xx in the topic name is depending on the `numberOfRpis` preperity
+- **proxy**: Contains the source code for the proxy component.
+- **sim**: Standalone application acting as the simulation environment for the proxy for the integration testing usage.
+- **trgt**: Standalone application acting as the target for the proxy for the integration testing usage.
+- **unitTest**: Contains unit test cases using GoogleTest.
+- **.github**: Contains CI/CD pipeline configurations using GitHub Actions.
 
----
+## Building and Running
 
-#### `proxy`
+### Dependencies
 
-this code provide the main functionality of the proxy-mqtt-client that is responsible to establish the network between the `caral` world and the `rpi` worlds.
+The Proxy software has the following dependencies:
+`cmake`, `paho client lib`, `boost lib` and for unit testing: `gtest lib`, `gmock lib`
 
----
+you can install them using
 
-## Testing
-
-### unit testing
-
-- each module has its own testing directory
-
-### integration testing
-
-- carla/ and rpi/ are mock applications for the integration testing
-
-### 2. `carla/`
-
-- This code establishes a way of making an application that acts like `carla simulator` environment.
-- `carla simulator` Provides the system with the real-sensors' readings and accepts the actions of each target.
-- This code prove this concept using file handling process.
-
-### 3. `rpi/`
-
-- This code establishes a way of making an application that acts like `target AKA raspberrypi`.
-- The target accepts the readings of the sensors and provide the actions to be sent back to Carla.
-- This code prove this concept using file handling process.
-
-## Installation and testing
-
-### clone the repo
-
-```bash
-git clone https://github.com/ahmedrezkgabr/proxy.git
-
-cd proxy
+``` bash
+sudo apt-get update && sudo apt-get install -y libssl-dev cmake libboost-all-dev libpaho-mqtt* libgtest-dev libgmock-dev
 ```
 
-### configure the proxy system, and create logging files for test applications
+To build and run the proxy component, follow these steps:
 
-- open ./proxy/config.ini with any text editor
+1. **Clone the repository**:
 
-- make your modifications
+   ```bash
+   git clone https://github.com/ahmedrezkgabr/proxy.git
+   cd proxy
+   ```
 
-- save the modified file
+2. **Build the proxy component**:
 
-- make directory to contain logging files
+   ```bash
+   cd proxy
+   # optional: confiuarate the proxy behaviour from config.ini file
+   mkdir build
+   cd build
+   cmake ..
+   make
+   ```
 
-```bash
-mkdir .log
-cd .log
+3. **Run the proxy component**:
 
-# make directory for each test app
-# carla
-mkdir carla
-touch carla/sensors.csv
-touch carla/actions.csv
+    The running of proxy needs the MQTT brocker to be active
 
-# rpixx
-mkdir rpi01
-touch rpi01/sensors.csv
-touch rpi01/actions.csv
+   ```bash
+   # you can pass your ini configuration file
+   ./proxy <path/to/configuration/file>
+   ```
 
-# repeate the last three commands with diferent numbers 02, 03, ...
-```
+## Unit Testing
 
-- as mentioned before **carla and each rpi systems are testing the core of this repo ```proxy```**
+Unit tests are provided using the GoogleTest framework. To build and run the tests:
 
-### build the code
+1. **Navigate to the unit test directory**:
 
-#### install dependencies
+   ```bash
+   cd proxy/unitTest/configTest
+   ```
 
-- you should install ```cmake```, ```make```, ```gcc```, ```paho-mqtt-cpp```, ```boost/property_tree/ini_parser``` and ```mqtt-broker(mosquitto)```.
+2. **Build the tests**:
 
-#### build proxy
+   ```bash
+   mkdir build
+   cd build
+   cmake ..
+   make
+   ```
 
-- make a directory to contain the building process output files
+3. **Run the tests**:
 
-```bash
-mkdir ./proxy/build
-cd ./proxy/build/
-```
+   ```bash
+   ./configTest
+   ```
 
-- generate cmake files
+4. **Repeat for the proxyTest**
 
-```bash
-cmake ..
-```
+## Integration Testing
 
-- build the code by make command
+We have a stand-alone applications that provide the functionality of the target and simulation from the proxy POV (communication).
 
-```bash
-make
-```
+To test the Interaction between proxy, simulation, and number of targets
 
-- now you have executable named ```proxy```
+1. **Navigate to sim and build the simulation-like application**:
 
-#### build carla
+    ``` bash
+    cd sim
+    mkdir build
+    cd build
+    cmake ..
+    make
+    ```
 
-- make a directory to contain the building process output files
+2. **Run the simulation-like application**
 
-```bash
-mkdir ./carla/build
-cd ./carla/build/
-```
+    The running of simulation-like application needs the MQTT brocker to be active
 
-- generate cmake files
+   ```bash
+   ./sim <address>
+   ```
 
-```bash
-cmake ..
-```
+3. **Navigate to trgt and build the target-like application**:
 
-- build the code by make command
+    ``` bash
+    cd trgt
+    mkdir build
+    cd build
+    cmake ..
+    make
+    ```
 
-```bash
-make
-```
+4. **Run the target-like application**:
 
-- now you have executable named ```carla```
+    The running of target-like application needs the MQTT brocker to be active
 
-#### build rpi
+   ```bash
+   ./trgt <target_id> <path/to/actions/log/file> <path/to/sensors/log/file>
+   ```
 
-- make a directory to contain the building process output files
+5. **You can add instences of the target like application as you want, each with unique id**:
+    
+    you need to specify the number of targets in the proxy configuration file `proxy/proxy/confi.ini`.
 
-```bash
-mkdir ./rpi/build
-cd ./rpi/build/
-```
 
-- generate cmake files
+6. **Do not forget to build the log directory for the sim and trgt applications and touch files for both sensors and actions**:
 
-```bash
-cmake ..
-```
+    bath prefered to be like:
+    ```bash
+    ├── proxy
+    ├── sim
+    ├── trgt
+    └── .log
+    ```
 
-- build the code by make command
+## CI/CD
 
-```bash
-make
-```
-
-- now you have executable named ```rpi```
-
-### run the system
-
-#### run the `mqtt broker`
-
-```bash
-# -v for logging information
-mosquitto -v
-```
-
-#### run the ```proxy```
-
-- navigate to the build directory of proxy
-
-- run the proxy
-
-```bash
-# you can have your own config.ini file
-# if thouhg, pass its path as an argument to the proxy
-./proxy
-```
-
-#### run test applications ```carla```, and some instences of ```rpi```
-
-- navigate to the build directory of carla
-
-- run carla
-
-```bash
-./carla
-```
-
-- navigate to the build directory of rpi
-
-- run some instances of rpi
-
-- give some arguments ```rpi-id```, ```path-of-actions-logging-file```, ```path-of-sensors-logging-file```
-
-- repeate the command with different argument
-
-- rpi-id is a sequence number ```01```, ```02```, ```xx```
-
-```bash
-./rpi <rpi-id> <path-of-actions-file> <path-of-sensors-file>
-```
+The repository uses GitHub Actions for continuous integration and continuous deployment (CI/CD). The configuration files are located in the `.github/workflows` directory.
