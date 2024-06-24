@@ -74,7 +74,6 @@ int main(int argc, char *argv[])
 
             /* publish the new data each to its topic */
             topForBub.publish(actions);
-            callback.counter_sen++;
 
             if (callback.recived_msg_flag)
             {
