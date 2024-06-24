@@ -24,12 +24,12 @@ int main(int argc, char *argv[])
     myConfig.setConfigFilePath((argc > 1) ? std::string(argv[1]) : DEFAULT_CONFIG_FILEPATH);
 
     /* setting the configuarations */
-    std::cout << "Loading configuaration from: " << myConfig.getConfigFilePath() << std::endl;
+    std::cout << "Loading configuaration from: '" << myConfig.getConfigFilePath() << "'..." << std::endl;
 
     if (myConfig.loadConfiguaration() == Config_Error_t::NOT_OK)
     {
         std::cerr << "Unable to load configuaration!" << std::endl;
-        std::cerr << "LOADING THE DEFAULT CONFIGUARATION!!" << std::endl;
+        std::cerr << "LOADING THE DEFAULT CONFIGUARATION..." << std::endl;
     }
 
     Proxy myProxy(myConfig);
@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
             {
 
                 /* parsing information */
+                std::cout << "parsing..." << std::endl;
                 myProxy.parse();
 
                 /* publish to RPIS */
@@ -63,6 +64,7 @@ int main(int argc, char *argv[])
             else if (myProxy.getRxFalg() == Proxy_Flag_t::RPIS)
             {
                 /* composing information */
+                std::cout << "composing..." << std::endl;
                 myProxy.compose();
 
                 /* publish to CARLA */

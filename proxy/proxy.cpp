@@ -22,6 +22,10 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(), config.ge
                                             /* take the content of the message */
                                             std::string topic = msg->get_topic();
                                             std::string content = msg->to_string();
+                                            
+                                            std::cout   << "Message arrived with data: " << content
+                                                        << ", from topic: " << topic
+                                                        << std::endl;
 
                                             for (uint8_t i = 0; i < this->numberOfRpis + 1; i++)/* which topic i received on */
                                             {
@@ -48,20 +52,20 @@ Proxy::Proxy(ConfigHandler &config) : proxyClient(config.getAddress(), config.ge
 
     /* set the call back of connection */
     this->proxyClient.set_connected_handler([&](const std::string &cause)
-                                            { std::cout << "connected to broker @ "
-                                                        << this->proxyClient.get_server_uri()
+                                            { std::cout << "Connected to server: '"
+                                                        << this->proxyClient.get_server_uri() << "'"
                                                         << std::endl; });
 
     /* set the call back of the connection lost */
     this->proxyClient.set_connection_lost_handler([&](const std::string &cause)
-                                                  { std::cout << "connection to broker @ "
+                                                  { std::cout << "Connection to server: '"
                                                               << this->proxyClient.get_server_uri()
-                                                              << " lost!" << std::endl; });
+                                                              << "' lost!" << std::endl; });
 
     /* set the call back of disconnection */
     this->proxyClient.set_disconnected_handler([&](const mqtt::properties &, mqtt::ReasonCode)
-                                               { std::cout << "disconnected to broker @ "
-                                                           << this->proxyClient.get_server_uri()
+                                               { std::cout << "Disconnected to server: '"
+                                                           << this->proxyClient.get_server_uri() << "'"
                                                            << std::endl; });
 
     /* set the number of rpis */
@@ -163,14 +167,23 @@ Proxy_Flag_t Proxy::getRxFalg()
 }
 void Proxy::publish(Proxy_Flag_t type)
 {
-    /* publish what has been received from carla */
+    /* publish what has been received from sim */
     if (type == Proxy_Flag_t::CARLA)
+    {
         for (uint8_t i = 0; i < this->numberOfRpis; i++)
+        {
             this->pubTopics[i + 1].publish(this->sensorsMsgs[i + 1]);
+            std::cout << "Publishing data: " << this->sensorsMsgs[i + 1]
+                      << ", to topic: " << this->pubTopics[i + 1].to_string()
+                      << std::endl;
+        }
+    }
 
-    /* publish what has been received from rpis */
+    /* publish what has been received from trgts */
     else if (type == Proxy_Flag_t::RPIS)
+    {
         this->pubTopics[0].publish(this->actionsMsgs[0]);
+    }
 }
 
 void Proxy::clearRxFlag(Proxy_Flag_t type)
