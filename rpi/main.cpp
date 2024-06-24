@@ -10,7 +10,7 @@
 #include <ctime>
 #include "mqtt/async_client.h"
 #include "filehandling.hpp"
-#include "rpi.hpp"
+#include "trgt.hpp"
 
 const std::string DFLT_ADDRESS{"mqtt://localhost:1883"};
 const int QOS{1};
@@ -23,14 +23,14 @@ int main(int argc, char *argv[])
 {
     /*const intialization*/
     /* init */
-    /* get the passed argument to be the RPI_ID, INPUT_FILE_PATH, and OUTPUT_FILE_PATH in this order */
-    std::string RPI_ID = (argc > 1) ? std::string(argv[1]) : "01";
-    std::string INPUT_FILE_PATH = (argc > 2) ? std::string(argv[2]) : "../../.logs/rpi" + std::string(argv[1]) + "/actions.csv";
-    std::string OUTPUT_FILE_PATH = (argc > 3) ? std::string(argv[3]) : "../../.logs/rpi" + std::string(argv[1]) + "/sensors.csv";
+    /* get the passed argument to be the TRGT_ID, INPUT_FILE_PATH, and OUTPUT_FILE_PATH in this order */
+    std::string TRGT_ID = (argc > 1) ? std::string(argv[1]) : "01";
+    std::string INPUT_FILE_PATH = (argc > 2) ? std::string(argv[2]) : "../../.logs/trgt" + std::string(argv[1]) + "/actions.csv";
+    std::string OUTPUT_FILE_PATH = (argc > 3) ? std::string(argv[3]) : "../../.logs/trgt" + std::string(argv[1]) + "/sensors.csv";
 
-    const std::string CLIENT_ID{"rpi_" + RPI_ID};
-    const std::string TOPIC_TO_PUB{"rpi/" + RPI_ID + "/actions"};
-    const std::string TOPIC_TO_SUB{"rpi/" + RPI_ID + "/sensors"};
+    const std::string CLIENT_ID{"trgt_" + TRGT_ID};
+    const std::string TOPIC_TO_PUB{"trgt/" + TRGT_ID + "/actions"};
+    const std::string TOPIC_TO_SUB{"trgt/" + TRGT_ID + "/sensors"};
 
     /* init */
     /* get the passed argument to be the address, if not use the defualt */
