@@ -95,7 +95,8 @@ private:
     std::mutex sensorsMutex;
     std::mutex actionsMutex;
 
-    std::vector<std::string> split(const std::string &str, char delimiter);
+    std::vector<std::string> parseJSONString(const std::string &jsonString);
+    std::string composeJSONString(const std::vector<std::string> &stringList);
 };
 
 #endif /* PROXY__HPP_ */

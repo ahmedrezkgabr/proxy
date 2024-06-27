@@ -1,6 +1,8 @@
 #include <iostream>
 #include <math.h>
 #include <mutex>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 #include "config.hpp"
 #include "mqtt/async_client.h"
 #include "proxy.hpp"
@@ -202,47 +204,22 @@ void Proxy::clearRxFlag(Proxy_Flag_t type)
 void Proxy::parse()
 {
     this->sensorsMutex.lock();
-    /* split the string at index 0 into n strings each in index i (i = 1 : n - 1) */
-    if (this->sensorsMsgs.empty() || this->sensorsMsgs[0].empty())
+
+    if (this->sensorsMsgs.empty())
     {
-        std::cerr << "Error: sensorsMsgs is empty or the 0th element is empty." << std::endl;
+        std::cerr << "sensorMsgs is empty!" << std::endl;
         return;
     }
 
-    /* Split the 0th element by commas */
-    std::vector<std::string> values = split(this->sensorsMsgs[0], ',');
+    std::vector<std::string> parsedStrings = parseJSONString(this->sensorsMsgs[0]);
 
-    /* Ensure there are enough elements to process */
-    size_t numValues = values.size();
-    if (numValues == 0)
+    /* Resize sensorMsgs to hold the parsed strings */
+    this->sensorsMsgs.resize(parsedStrings.size() + 1);
+
+    /* Assign parsed strings to sensorMsgs starting from index 1 */
+    for (size_t i = 0; i < parsedStrings.size(); ++i)
     {
-        std::cerr << "Error: No values found in the 0th element of sensorsMsgs." << std::endl;
-        return;
-    }
-
-    /* Calculate the number of elements needed in the sensorsMsgs to hold all values */
-    size_t requiredElements = (numValues + 6) / 7;
-
-    /* Resize the sensorsMsgs vector if necessary */
-    if (this->sensorsMsgs.size() < requiredElements + 1)
-    {
-        this->sensorsMsgs.resize(requiredElements + 1);
-    }
-
-    /* Fill subsequent elements of the sensorsMsgs vector with values */
-    size_t index = 0;
-    for (size_t i = 1; i <= requiredElements; ++i)
-    {
-        std::ostringstream oss;
-        for (size_t j = 0; j < 7 && index < numValues; ++j, ++index)
-        {
-            if (j > 0)
-            {
-                oss << ",";
-            }
-            oss << values[index];
-        }
-        this->sensorsMsgs[i] = oss.str();
+        this->sensorsMsgs[i + 1] = parsedStrings[i];
     }
 
     this->sensorsMutex.unlock();
@@ -251,25 +228,89 @@ void Proxy::parse()
 void Proxy::compose()
 {
     this->actionsMutex.lock();
-    this->actionsMsgs[0] = "";
-    for (size_t i = 0; i < this->numberOfRpis; i++)
+
+    if (this->actionsMsgs.size() < 2)
     {
-        this->actionsMsgs[0] += this->actionsMsgs[i + 1];
-        if (i < this->numberOfRpis - 1)
-            this->actionsMsgs[0] += ",";
+        std::cerr << "Not enough messages to compose!" << std::endl;
+        return;
     }
+
+    /* Collect the strings from actionMsgs[1] to actionMsgs[n]*/
+    std::vector<std::string> stringList(this->actionsMsgs.begin() + 1, this->actionsMsgs.end());
+
+    /* Compose them into a single JSON string */
+    std::string composedJSON = composeJSONString(stringList);
+
+    /* Assign the composed JSON string to actionMsgs[0] */
+    this->actionsMsgs[0] = composedJSON;
 
     this->actionsMutex.unlock();
 }
 
-std::vector<std::string> Proxy::split(const std::string &str, char delimiter)
+std::vector<std::string> Proxy::parseJSONString(const std::string &jsonString)
 {
-    std::vector<std::string> tokens;
-    std::string token;
-    std::istringstream tokenStream(str);
-    while (std::getline(tokenStream, token, delimiter))
+    namespace pt = boost::property_tree;
+
+    std::vector<std::string> resultList;
+    try
     {
-        tokens.push_back(token);
+        pt::ptree tree;
+        std::istringstream iss(jsonString);
+        pt::read_json(iss, tree);
+
+        /* Iterate over each property in the JSON object */
+        for (const auto &pair : tree)
+        {
+            std::ostringstream oss;
+            oss << "[";
+            bool first = true;
+            for (const auto &item : pair.second)
+            {
+                if (!first)
+                {
+                    oss << ", ";
+                }
+                oss << item.second.get_value<float>();
+                first = false;
+            }
+            oss << "]";
+            resultList.push_back(oss.str());
+        }
     }
-    return tokens;
+    catch (const std::exception &e)
+    {
+        std::cerr << "Error parsing JSON: " << e.what() << std::endl;
+    }
+
+    return resultList;
+}
+
+std::string Proxy::composeJSONString(const std::vector<std::string> &stringList)
+{
+    namespace pt = boost::property_tree;
+
+    pt::ptree tree;
+
+    try
+    {
+        /* Iterate over the vector of strings and add them to the property tree */
+        int index = 0;
+        for (const auto &str : stringList)
+        {
+            std::istringstream iss(str);
+            pt::ptree subTree;
+            pt::read_json(iss, subTree);
+            tree.put_child(std::to_string(index++), subTree);
+        }
+
+        /* Convert property tree to a JSON string */
+        std::ostringstream oss;
+        pt::write_json(oss, tree, false); // false to omit pretty printing
+        return oss.str();
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "Error composing JSON: " << e.what() << std::endl;
+        return "";
+    }
 }
