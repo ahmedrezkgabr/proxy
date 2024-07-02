@@ -287,25 +287,22 @@ std::vector<std::string> Proxy::parseJSONString(const std::string &jsonString)
 
 std::string Proxy::composeJSONString(const std::vector<std::string> &stringList)
 {
-    namespace pt = boost::property_tree;
-
-    pt::ptree tree;
+    std::ostringstream oss;
 
     try
     {
-        /* Iterate over the vector of strings and add them to the property tree */
-        int index = 0;
-        for (const auto &str : stringList)
+        oss << "["; // Start of the JSON array
+
+        for (size_t i = 0; i < stringList.size(); ++i)
         {
-            std::istringstream iss(str);
-            pt::ptree subTree;
-            pt::read_json(iss, subTree);
-            tree.put_child(std::to_string(index++), subTree);
+            if (i > 0)
+                oss << ","; // Separate elements with a comma except before the first element
+
+            oss << stringList[i]; // Append the current string as-is
         }
 
-        /* Convert property tree to a JSON string */
-        std::ostringstream oss;
-        pt::write_json(oss, tree, false); // false to omit pretty printing
+        oss << "]"; // End of the JSON array
+
         return oss.str();
     }
     catch (const std::exception &e)
